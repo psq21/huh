@@ -1,3 +1,7 @@
 {% extends 'common/index.html' %}
 {% from 'components/header/header.html' import header with context %}
-{% block content %}{{ header() }}{% endblock %}
+{% from 'components/footer/footer.html' import footer with context %}
+{% block content %}
+    {{ header() }}
+    {{ footer() }}
+{% endblock %}

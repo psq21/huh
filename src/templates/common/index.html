@@ -2,7 +2,10 @@
 <html lang="en">
     {% from 'common/scripts.html' import scripts with context %}
     {% from 'common/head.html' import head with context %}
-    <head>{{ head() }}</head>
+    <head>
+        {{ head() }}
+        {% block head %}{% endblock %}
+    </head>
     <body>
         {% block content %}{% endblock %}
         {{ scripts() }}
