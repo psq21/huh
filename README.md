@@ -20,4 +20,4 @@ python index.py
 use ``/src`` as the cwd!
 
 format python files: ``black .``
-format html: ``djlint . --format``
+format html: ``djlint . --reformat``

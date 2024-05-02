@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% from 'common/scripts.html' import scripts with context %}
+    {% from 'common/head.html' import head with context %}
+    <head>{{ head() }}</head>
+    <body>
+        {% block content %}{% endblock %}
+        {{ scripts() }}
+    </body>
+</html>
