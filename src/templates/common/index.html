@@ -2,12 +2,16 @@
 <html lang="en">
     {% from 'common/scripts.html' import scripts with context %}
     {% from 'common/head.html' import head with context %}
+    {% from 'components/header/header.html' import header with context %}
+    {% from 'components/footer/footer.html' import footer with context %}
     <head>
         {{ head() }}
         {% block head %}{% endblock %}
     </head>
     <body>
+        {{ header() }}
         {% block content %}{% endblock %}
+        {{ footer() }}
         {{ scripts() }}
     </body>
 </html>

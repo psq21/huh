@@ -1,7 +1,18 @@
 {% extends 'common/index.html' %}
-{% from 'components/header/header.html' import header with context %}
-{% from 'components/footer/footer.html' import footer with context %}
 {% block content %}
-    {{ header() }}
-    {{ footer() }}
+    <div class="hero min-h-screen bg-base-200">
+        <div class="hero-content flex-col lg:flex-row mx-2 gap-2">
+            <img src="{{ url_for('static', filename='huh.svg') }}"
+                 alt="logo"
+                 class="w-32 h-32">
+            <div class="flex  flex-col gap-2 items-center ">
+                <h1 class="text-5xl font-bold">HUHHHHHHHHH</h1>
+                <p class="py-6 max-w-xl">
+                    Huh is an announcements application. It is a simple and easy to use application that allows you to create and view announcements.
+                    Created for Mr Lai babe <3
+                </p>
+                <a href="/announcements/all"><button class="btn btn-primary">Get Started</button></a>
+            </div>
+        </div>
+    </div>
 {% endblock %}
