@@ -1,8 +1,7 @@
-
 # huh
 
+## setup
 
-## setup 
 ```
 # activate venv (optional)
 python -m venv venv
@@ -17,5 +16,5 @@ python app.py
 env HUH_HOST=localhost HUH_PORT=8080 python app.py
 ```
 
-format python files: ``black .``
-format html: ``djlint . --reformat``
+format python files: `black .`
+format html: `djlint . --reformat`
