@@ -60,14 +60,26 @@ class Entry:
         return self.id != other.id
 
     @classmethod
-    def by_id(cls, conn, id):
+    def by_column(cls, conn, field, value):
         cur = conn.cursor()
         res = cur.execute(
-            f"SELECT rowid AS id, * FROM {cls.table_name} WHERE rowid = ?", (id,)
+            f"SELECT rowid AS id, * FROM {cls.table_name} WHERE {field} = ?",
+            (value,),
         )
         data = res.fetchone()
 
         return cls(*data) if data else None
+
+    @classmethod
+    def by_id(cls, conn, id):
+        return cls.by_column(conn, "id", id)
+
+    @classmethod
+    def all(cls, conn):
+        cur = conn.cursor()
+        res = cur.execute(f"SELECT rowid AS id, * FROM {cls.table_name}", ())
+
+        return (cls(*row) for row in res)
 
 
 class User(UserMixin, Entry):
