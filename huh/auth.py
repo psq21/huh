@@ -1,5 +1,5 @@
 from email_validator import validate_email, EmailNotValidError
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, abort, redirect, render_template, request, url_for
 from flask_login import current_user, login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -18,11 +18,14 @@ def signup():
 
     errors = []
     normalised_email = None
-    email, name, password = (
-        request.form["email"],
-        request.form["name"],
-        request.form["password"],
-    )
+    try:
+        email, name, password = (
+            request.form["email"],
+            request.form["name"],
+            request.form["password"],
+        )
+    except KeyError:
+        abort(400)
 
     try:
         email_info = validate_email(email)
@@ -56,7 +59,10 @@ def login():
         return render_template("login.html")
 
     normalised_email = None
-    email, password = request.form["email"], request.form["password"]
+    try:
+        email, password = request.form["email"], request.form["password"]
+    except KeyError:
+        abort(400)
 
     try:
         email_info = validate_email(email)
