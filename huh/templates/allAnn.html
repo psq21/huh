@@ -1,0 +1,14 @@
+{% extends common/index.html%}
+{% block content %}
+<h1>Announcements</h1>
+    {% for ann in anns %}
+    <a href='/announcement/{{ ann.rowid }}'>
+        <div class="ann">
+            <h2>{{ ann.title }}</h2>
+            <p>{{ ann.name }}</p>
+            <p>{{ ann.timestamp }}</p>
+            <p>{{ ann.content }}</p>
+        </div>
+    </a>
+    {% endfor %}
+{% endblock %}
