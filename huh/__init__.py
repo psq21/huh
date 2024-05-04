@@ -3,6 +3,7 @@ from flask_login import LoginManager
 import secrets
 
 from huh import auth, db
+from huh.db import User
 
 app = Flask(__name__)
 
@@ -16,7 +17,8 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def user_loader(id):
-    return db.Connection().get_user_by_id(id)
+    with db.connect() as conn:
+        return User.by_id(conn, int(id))
 
 
 @app.route("/")

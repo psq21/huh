@@ -4,6 +4,7 @@ from flask_login import current_user, login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from huh import db
+from huh.db import User
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -38,14 +39,15 @@ def signup():
 
     hash = generate_password_hash(password)
 
-    with db.Connection() as conn:
-        if not conn.add_user(normalised_email, name, hash):
+    with db.connect() as conn:
+        user = User.create(conn, normalised_email, name, hash)
+        if not user:
             errors.append(f"The email address is taken")
 
         if errors:
             return render_template("signup.html", error="\n".join(errors))
 
-        login_user(conn.get_user_by_email(normalised_email))
+        login_user(user)
 
     return redirect(url_for("homepage"))
 
@@ -70,15 +72,15 @@ def login():
     except EmailNotValidError as e:
         return render_template("login.html", error=str(e))
 
-    with db.Connection() as conn:
-        user = conn.get_user_by_email(normalised_email)
+    with db.connect() as conn:
+        user = User.by_column(conn, "email", normalised_email)
 
         if not user or not check_password_hash(user.hash, password):
             return render_template(
                 "login.html", error="The email or the password is incorrect"
             )
 
-        login_user(conn.get_user_by_email(normalised_email))
+        login_user(user)
 
     return redirect(url_for("homepage"))
 
