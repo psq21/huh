@@ -2,8 +2,8 @@ from flask import Flask, render_template
 from flask_login import LoginManager
 import secrets
 
-from huh import auth, db, comment
-from huh.db import User, Comment, connect
+from huh import auth, db, announcement, comment
+from huh.db import User
 
 app = Flask(__name__)
 
@@ -12,6 +12,7 @@ app.secret_key = secrets.token_urlsafe(16)
 app.register_blueprint(auth.bp)
 app.register_blueprint(comment.bp)
 
+app.register_blueprint(announcement.bp)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
