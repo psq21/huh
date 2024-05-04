@@ -1,0 +1,18 @@
+{% macro comment(author_name, content, timestamp, allowed_edit) %}
+    <div class="chat chat-start px-4">
+        <div class="chat-header">
+            {{ author_name }}
+            <time class="text-xs opacity-50">{{ timestamp }}</time>
+        </div>
+        <div class="chat-bubble shrink-0">
+            <p>{{- content -}}</p>
+        </div>
+        {% if allowed_edit %}
+            <button class="btn btn-circle btn-sm col-[3] edit-btn">
+                <img src="{{ url_for('static', filename='pencil.svg') }}"
+                     class="h-4 w-4"
+                     alt="Edit" />
+            </button>
+        {% endif %}
+    </div>
+{% endmacro %}
