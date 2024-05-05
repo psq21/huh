@@ -1,2 +1,23 @@
-{% extends 'common/index.html' %}
-{% block content %}<h1>{{ }}</h1>{% endblock %}
+{% extends common/index.html %}
+{% block content %}
+<div class=ann>
+    <h2>{{ ann.title }}</h2>
+    <p>{{ ann.name }}</p>
+    <p>{{ ann.timestamp }}</p>
+    <p>
+        {% for att in attachments %}
+        <a href=".....???"><span class="att">{{ att.name }}</span></a>
+        {% endfor %}
+    </p>
+    <p>{{ ann.content }}</p>
+</div>
+<div class=comm>
+    <h2>Comments</h2>
+    {% for comm in comments %}
+    <p>{{ comm.name }}</p>
+    <p>{{ comm.timestamp }}</p>
+    <p>{{ comm.content }}</p>
+    {% endfor %}
+</div>
+
+{% endblock %}
