@@ -1,6 +1,7 @@
 from flask_login import UserMixin
 from datetime import datetime
 import sqlite3
+from typing import Any, Self
 
 DB_PATH = "app.db"
 
@@ -50,17 +51,17 @@ def connect():
 class Entry:
     table_name = None
 
-    def __init__(self, id):
+    def __init__(self, id: int):
         self.id = id
 
-    def __eq__(self, other):
+    def __eq__(self, other: Self):
         return self.id == other.id
 
-    def __ne__(self, other):
+    def __ne__(self, other: Self):
         return self.id != other.id
 
     @classmethod
-    def by_column(cls, conn, field, value):
+    def by_column(cls, conn: sqlite3.Connection, field: str, value: Any):
         cur = conn.cursor()
         res = cur.execute(
             f"SELECT rowid AS id, * FROM {cls.table_name} WHERE {field} = ?",
@@ -71,11 +72,11 @@ class Entry:
         return cls(*data) if data else None
 
     @classmethod
-    def by_id(cls, conn, id):
+    def by_id(cls, conn: sqlite3.Connection, id: int):
         return cls.by_column(conn, "id", id)
 
     @classmethod
-    def all(cls, conn):
+    def all(cls, conn: sqlite3.Connection):
         cur = conn.cursor()
         res = cur.execute(f"SELECT rowid AS id, * FROM {cls.table_name}", ())
 
@@ -85,7 +86,7 @@ class Entry:
 class User(UserMixin, Entry):
     table_name = "user"
 
-    def __init__(self, id, email, name, hash, admin):
+    def __init__(self, id: int, email: str, name: str, hash: str, admin: bool):
         Entry.__init__(self, id)
 
         self.email = email
@@ -94,7 +95,7 @@ class User(UserMixin, Entry):
         self.admin = admin
 
     @staticmethod
-    def create(conn, email, name, hash):
+    def create(conn: sqlite3.Connection, email: str, name: str, hash: str):
         cur = conn.cursor()
 
         try:
@@ -111,7 +112,7 @@ class User(UserMixin, Entry):
         return User(id, email, name, hash, False)
 
     @staticmethod
-    def by_email(conn, email):
+    def by_email(conn: sqlite3.Connection, email: str):
         cur = conn.cursor()
         res = cur.execute("SELECT rowid AS id, * FROM user WHERE email = ?", (email,))
         data = res.fetchone()
@@ -125,7 +126,9 @@ class User(UserMixin, Entry):
 class Announcement(Entry):
     table_name = "announcement"
 
-    def __init__(self, id, author_id, title, timestamp, content):
+    def __init__(
+        self, id: int, author_id: int, title: str, timestamp: int, content: str
+    ):
         Entry.__init__(self, id)
 
         self.author_id = author_id
@@ -134,7 +137,7 @@ class Announcement(Entry):
         self.content = content
 
     @staticmethod
-    def create(conn, author_id: int, title, content):
+    def create(conn: sqlite3.Connection, author_id: int, title: str, content: str):
         cur = conn.cursor()
         timestamp = int(datetime.now().timestamp())
 
@@ -151,7 +154,7 @@ class Announcement(Entry):
 class Attachment(Entry):
     table_name = "attachment"
 
-    def __init__(self, id, announcement_id, name):
+    def __init__(self, id: int, announcement_id: int, name: str):
         Entry.__init__(self, id)
 
         self.announcement_id = announcement_id
@@ -165,7 +168,14 @@ class Attachment(Entry):
 class Comment(Entry):
     table_name = "comment"
 
-    def __init__(self, id, author_id, announcement_id, timestamp, content):
+    def __init__(
+        self,
+        id: int,
+        author_id: int,
+        announcement_id: int,
+        timestamp: int,
+        content: str,
+    ):
         Entry.__init__(self, id)
 
         self.author_id = author_id
@@ -174,7 +184,9 @@ class Comment(Entry):
         self.content = content
 
     @staticmethod
-    def create(conn, author_id, announcement_id, content):
+    def create(
+        conn: sqlite3.Connection, author_id: int, announcement_id: int, content: str
+    ):
         cur = conn.cursor()
         timestamp = int(datetime.now().timestamp())
 
