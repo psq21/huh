@@ -10,7 +10,7 @@
     <p>{{ ann.timestamp }}</p>
     <p>
         {% for att in attachments %}
-        <a href="attachments{{ att.name }}"><span class="att">{{ att.name }}</span></a>
+        <a href="attachments/{{ att.name }}"><span class="att">{{ att.name }}</span></a>
         {% endfor %}
     </p>
     <p>{{ ann.content }}</p>
@@ -18,9 +18,7 @@
 <div class=comm>
     <h2>Comments</h2>
     {% for comm in comments %}
-    <p>{{ comm.name }}</p>
-    <p>{{ comm.timestamp }}</p>
-    <p>{{ comm.content }}</p>
+        {{ comment(comm.rowid, comm.name, comm.content, comm.timestamp, comm.allowed_edit) }}
     {% endfor %}
 </div>
 {% endblock %}
