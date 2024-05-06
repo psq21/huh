@@ -1,11 +1,13 @@
 document.addEventListener("DOMContentLoaded", (event) => {
   const chats = document.querySelectorAll(".chat");
+  const ids = Array.from(document.querySelectorAll(".chat > .collapse")).map((el) => el.textContent.trim());
   const editBtns = document.querySelectorAll(".edit-btn");
   const chatBubbles = document.querySelectorAll(".chat-bubble");
 
   editBtns.forEach((editBtn, index) => {
     const chatBubble = chatBubbles[index];
     const chat = chats[index];
+    const id = ids[index];
     let originalContent = chatBubble.textContent;
 
     const editEvent = () => {
@@ -32,14 +34,34 @@ document.addEventListener("DOMContentLoaded", (event) => {
                      alt="Edit">
               `;
         editBtn.addEventListener("click", editEvent);
-        // todo: send save request to server
+        const fd = new FormData();
+        fd.append("content", newContent);
+
+        fetch(`/comment/update/${id}`, {
+          method: "PUT",
+          body: fd,
+        }).then((res) => {
+          if (res.ok) {
+            console.log("Comment updated successfully");
+          } else {
+            console.error("Failed to update comment");
+          }
+        });
       });
 
       // handle on delete
       const deleteBtn = chatBubble.querySelector(".delete-btn");
       deleteBtn.addEventListener("click", () => {
         chat.remove();
-        // todo: send delete request to server
+        fetch(`/comment/delete/${id}`, {
+          method: "DELETE",
+        }).then((res) => {
+          if (res.ok) {
+            console.log("Comment deleted successfully");
+          } else {
+            console.error("Failed to delete comment");
+          }
+        });
       });
 
       // handle cancel -- revert to original content
@@ -56,7 +78,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
                      alt="Edit">
               `;
         editBtn.addEventListener("click", editEvent);
-        // todo: send cancel request to server
+        
       });
     };
 

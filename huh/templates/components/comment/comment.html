@@ -1,4 +1,4 @@
-{% macro comment(author_name, content, timestamp, allowed_edit) %}
+{% macro comment(comment_id, author_name, content, timestamp, allowed_edit) %}
     <div class="chat chat-start px-4">
         <div class="chat-header">
             {{ author_name }}
@@ -14,5 +14,6 @@
                      alt="Edit" />
             </button>
         {% endif %}
+        <div class="collapse">{{ comment_id }}</div>
     </div>
 {% endmacro %}

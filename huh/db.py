@@ -244,3 +244,17 @@ class Comment(Entry):
         conn.commit()
 
         return Comment(id, author_id, announcement_id, timestamp, content)
+
+    def update(self, conn: sqlite3.Connection, content: str):
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE comment SET content = ? WHERE rowid = ?", (content, self.id)
+        )
+        conn.commit()
+
+        self.content = content
+
+    def delete(self, conn: sqlite3.Connection):
+        cur = conn.cursor()
+        cur.execute("DELETE FROM comment WHERE rowid = ?", (self.id,))
+        conn.commit()
