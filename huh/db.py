@@ -81,53 +81,6 @@ class Entry:
         res = cur.execute(f"SELECT rowid AS id, * FROM {cls.table_name}", ())
 
         return (cls(*row) for row in res)
-    
-    @classmethod
-    def all_ann(cls, conn):
-        cur = conn.cursor()
-        cur.row_factory = sqlite3.Row
-        res = cur.execute(
-            """
-            SELECT Announcement.rowid,title,name,timestamp,content FROM 
-            Announcement JOIN User ON Announcement.author_id=User.rowid
-            """
-            )
-        return res.fetchall()  
-    
-    @classmethod
-    def one_ann(cls,conn,annID):
-        cur = conn.cursor()
-        cur.row_factory = sqlite3.Row
-        res = cur.execute(
-            """
-            SELECT Announcement.rowid,title,name,timestamp,content 
-            FROM Announcement JOIN User ON Announcement.author_id=User.rowid
-            WHERE Announcement.rowid=?
-            """,
-            (annID,)
-            )
-        return res.fetchone()
-    
-    @classmethod
-    def one_ann_comments(cls,conn,annID):
-        cur = conn.cursor()
-        cur.row_factory = sqlite3.Row
-        res = cur.execute(
-            """
-            SELECT * FROM Comment LEFT OUTER JOIN User ON Comment.author_id=User.rowid
-            WHERE announcement_id=?
-            """,
-            (annID,)
-            )
-        return res.fetchall()
-    
-    @classmethod
-    def one_ann_attachments(cls,conn,annID):
-        cur = conn.cursor()
-        cur.row_factory = sqlite3.Row
-        res = cur.execute("SELECT * FROM Attachment WHERE announcement_id=?",(annID,))
-        return res.fetchall()
-
 
 
 class User(UserMixin, Entry):
@@ -196,6 +149,52 @@ class Announcement(Entry):
         conn.commit()
 
         return Announcement(id, author_id, title, timestamp, content)
+    
+    @staticmethod
+    def all_ann_w_name(conn):
+        cur = conn.cursor()
+        cur.row_factory = sqlite3.Row
+        res = cur.execute(
+            """
+            SELECT Announcement.rowid,title,name,timestamp,content 
+            FROM Announcement JOIN User ON Announcement.author_id=User.rowid
+            """
+            )
+        return res.fetchall()  
+    
+    @staticmethod
+    def one_ann(conn,annID):
+        cur = conn.cursor()
+        cur.row_factory = sqlite3.Row
+        res = cur.execute(
+            """
+            SELECT Announcement.rowid,title,name,timestamp,content 
+            FROM Announcement JOIN User ON Announcement.author_id=User.rowid
+            WHERE Announcement.rowid=?
+            """,
+            (annID,)
+            )
+        return res.fetchone()
+    
+    @staticmethod
+    def one_ann_comments(conn,annID):
+        cur = conn.cursor()
+        cur.row_factory = sqlite3.Row
+        res = cur.execute(
+            """
+            SELECT * FROM Comment LEFT OUTER JOIN User ON Comment.author_id=User.rowid
+            WHERE announcement_id=?
+            """,
+            (annID,)
+            )
+        return res.fetchall()
+    
+    @staticmethod
+    def one_ann_attachments(conn,annID):
+        cur = conn.cursor()
+        cur.row_factory = sqlite3.Row
+        res = cur.execute("SELECT * FROM Attachment WHERE announcement_id=?",(annID,))
+        return res.fetchall()
 
 
 class Attachment(Entry):
