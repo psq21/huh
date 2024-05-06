@@ -1,4 +1,8 @@
 {% extends 'common/index.html' %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="static/allAnn.css">
+{% endblock %}
 {% block content %}
     <h1>Announcements</h1>
     {% for ann in anns %}

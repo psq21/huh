@@ -11,7 +11,7 @@ bp = Blueprint("announcement", __name__, url_prefix="/announcement")
 def allAnn():
     if request.method=='GET': #return page of all announcements
         conn = connect()
-        data = Announcement.all_ann_w_name(conn)
+        data = Announcement.all_ann_w_name(conn) ##### change this #####
         conn.close()
         return render_template('allAnn.html',anns=data)
     
