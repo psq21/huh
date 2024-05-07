@@ -2,8 +2,7 @@ from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 import sqlite3
 
-from huh import db
-from db import * 
+from huh.db import connect, Announcement
 
 bp = Blueprint("announcement", __name__, url_prefix="/announcement")
 
@@ -13,6 +12,10 @@ def allAnn():
     if request.method=='GET': #return page of all announcements
         conn = connect()
         data = Announcement.all_ann_w_name(conn)
+        if data['userID']==current_user.id:
+            data['allowed_edit'] = True 
+        else:
+            data['allowed_edit'] = False
         conn.close()
         return render_template('allAnn.html',anns=data)
 

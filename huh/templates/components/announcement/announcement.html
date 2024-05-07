@@ -1,0 +1,24 @@
+{% macro announcement(title, name, timestamp, attachments, content, allowed_edit) %}
+    <div class="ann">
+        <table>
+            <tr>
+                <td class="title">{{ title }}</td>
+                <td>
+                    {% if allowed_edit %}
+                    <button class="btn btn-circle btn-sm col-[3] edit-btn">
+                        <img src="{{ url_for('static', filename='pencil.svg') }}"
+                             class="h-4 w-4"
+                             alt="Edit" />
+                    </button>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+        <p class="name">{{ name }}</p>
+        <p class="timestamp">{{ timestamp }}</p>
+        {% for att in attachments %}
+            <a href="{{ url_for('attachments',filename=att.name) }}"><span class="att">{{ att.name }}</span></a>
+        {% endfor %}
+        <p class="content">{{ content }}</p>
+    </div>
+{% endmacro %}

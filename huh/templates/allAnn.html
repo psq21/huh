@@ -1,18 +1,14 @@
 {% extends 'common/index.html' %}
+{% from 'components/announcement/announcement.html' import announcement with context %}
 {% block head %}
     {{ super() }}
-    <link rel="stylesheet" href="static/allAnn.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='allAnn.css') }}">
 {% endblock %}
 {% block content %}
     <h1>Announcements</h1>
     {% for ann in anns %}
-        <a href='/announcement/{{ ann.rowid }}'>
-            <div class="ann">
-                <h2>{{ ann.title }}</h2>
-                <p>{{ ann.name }}</p>
-                <p>{{ ann.timestamp }}</p>
-                <p>{{ ann.content }}</p>
-            </div>
+        <a href='/announcement/{{ ann.annID }}'>
+            {{ announcement(ann.title, ann.name, ann.timestamp, ann.attachments=None, ann.content, ann.allowed_edit) }}
         </a>
     {% endfor %}
 {% endblock %}
