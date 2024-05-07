@@ -174,7 +174,7 @@ class Announcement(Entry):
         conn.commit()
 
         return Announcement(id, author_id, title, timestamp, content)
-    
+
     @staticmethod
     def all_ann_w_name(conn: sqlite3.Connection):
         cur = conn.cursor()
@@ -184,12 +184,12 @@ class Announcement(Entry):
             SELECT Announcement.rowid as annID,title,timestamp,content, User.rowid as userID, name
             FROM Announcement JOIN User ON Announcement.author_id=User.rowid
             """
-            )
-        
+        )
+
         return [dict(row) for row in res.fetchall()]
-    
+
     @staticmethod
-    def one_ann(conn: sqlite3.Connection,annID: int):
+    def one_ann(conn: sqlite3.Connection, annID: int):
         cur = conn.cursor()
         cur.row_factory = sqlite3.Row
         res = cur.execute(
@@ -198,12 +198,12 @@ class Announcement(Entry):
             FROM Announcement JOIN User ON Announcement.author_id=User.rowid
             WHERE Announcement.rowid=?
             """,
-            (annID,)
-            )
+            (annID,),
+        )
         return dict(res.fetchone())
-    
+
     @staticmethod
-    def one_ann_comments(conn: sqlite3.Connection,annID: int):
+    def one_ann_comments(conn: sqlite3.Connection, annID: int):
         cur = conn.cursor()
         cur.row_factory = sqlite3.Row
         res = cur.execute(
@@ -211,15 +211,15 @@ class Announcement(Entry):
             SELECT * FROM Comment LEFT OUTER JOIN User ON Comment.author_id=User.rowid
             WHERE announcement_id=?
             """,
-            (annID,)
-            )
+            (annID,),
+        )
         return [dict(row) for row in res.fetchall()]
-    
+
     @staticmethod
-    def one_ann_attachments(conn: sqlite3.Connection,annID: int):
+    def one_ann_attachments(conn: sqlite3.Connection, annID: int):
         cur = conn.cursor()
         cur.row_factory = sqlite3.Row
-        res = cur.execute("SELECT * FROM Attachment WHERE announcement_id=?",(annID,))
+        res = cur.execute("SELECT * FROM Attachment WHERE announcement_id=?", (annID,))
         return [dict(row) for row in res.fetchall()]
 
 
