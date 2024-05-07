@@ -1,7 +1,7 @@
 from flask_login import UserMixin
 from datetime import datetime
 import sqlite3
-from typing import Any, Self
+from typing import Any, Self, List
 
 DB_PATH = "app.db"
 
@@ -176,7 +176,7 @@ class Announcement(Entry):
         return Announcement(id, author_id, title, timestamp, content)
     
     @staticmethod
-    def all_ann_w_name(conn):
+    def all_ann_w_name(conn: sqlite3.Connection):
         cur = conn.cursor()
         cur.row_factory = sqlite3.Row
         res = cur.execute(
@@ -185,10 +185,11 @@ class Announcement(Entry):
             FROM Announcement JOIN User ON Announcement.author_id=User.rowid
             """
             )
-        return res.fetchall()  
+        
+        return [dict(row) for row in res.fetchall()]
     
     @staticmethod
-    def one_ann(conn,annID):
+    def one_ann(conn: sqlite3.Connection,annID: int):
         cur = conn.cursor()
         cur.row_factory = sqlite3.Row
         res = cur.execute(
@@ -199,10 +200,10 @@ class Announcement(Entry):
             """,
             (annID,)
             )
-        return res.fetchone()
+        return dict(res.fetchone())
     
     @staticmethod
-    def one_ann_comments(conn,annID):
+    def one_ann_comments(conn: sqlite3.Connection,annID: int):
         cur = conn.cursor()
         cur.row_factory = sqlite3.Row
         res = cur.execute(
@@ -212,14 +213,14 @@ class Announcement(Entry):
             """,
             (annID,)
             )
-        return res.fetchall()
+        return [dict(row) for row in res.fetchall()]
     
     @staticmethod
-    def one_ann_attachments(conn,annID):
+    def one_ann_attachments(conn: sqlite3.Connection,annID: int):
         cur = conn.cursor()
         cur.row_factory = sqlite3.Row
         res = cur.execute("SELECT * FROM Attachment WHERE announcement_id=?",(annID,))
-        return res.fetchall()
+        return [dict(row) for row in res.fetchall()]
 
 
 class Attachment(Entry):
