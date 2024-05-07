@@ -176,6 +176,12 @@ class Announcement(Entry):
         return Announcement(id, author_id, title, timestamp, content)
     
     @staticmethod
+    def delete_w_ann(conn: sqlite3.Connection, id: int):
+        cur = conn.cursor()
+        cur.execute("DELETE FROM Announcement WHERE rowid=?", (id))
+        conn.commit()
+    
+    @staticmethod
     def all_ann_w_name(conn):
         cur = conn.cursor()
         cur.row_factory = sqlite3.Row
@@ -232,8 +238,29 @@ class Attachment(Entry):
         self.name = name
 
     @staticmethod
-    def create(conn, *_):
-        raise NotImplementedError
+    def create(conn: sqlite3.Connection, annID: int, name: str):
+        cur = conn.cursor()
+        res = cur.execute(
+            "INSERT INTO Attachment VALUES (?,?) RETURNING rowid",
+            (annID, name)
+        )
+        
+        id = res.fetchone()[0]
+        conn.commit()
+
+        return Attachment(id, annID, name)
+    
+    @staticmethod
+    def delete_w_ann(conn: sqlite3.Connection, annID: int):
+        cur = conn.cursor()
+        res = cur.execute(
+            "DELETE FROM Attachment WHERE announcement_id=? RETURNING name",
+            (annID,)
+        )
+        conn.commit()
+
+        delFiles = [ row[0] for row in res.fetchall() ]
+        return delFiles
 
 
 class Comment(Entry):
@@ -269,6 +296,12 @@ class Comment(Entry):
         conn.commit()
 
         return Comment(id, author_id, announcement_id, timestamp, content)
+    
+    @staticmethod
+    def delete_w_ann(conn: sqlite3.Connection, annID: int):
+        cur = conn.cursor()
+        cur.execute("DELETE FROM Comment WHERE author_id=?", (annID,))
+        conn.commit()
 
     def update(self, conn: sqlite3.Connection, content: str):
         cur = conn.cursor()
@@ -283,3 +316,4 @@ class Comment(Entry):
         cur = conn.cursor()
         cur.execute("DELETE FROM comment WHERE rowid = ?", (self.id,))
         conn.commit()
+
