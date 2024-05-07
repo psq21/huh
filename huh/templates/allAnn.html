@@ -8,7 +8,7 @@
     <h1>Announcements</h1>
     {% for ann in anns %}
         <a href='/announcement/{{ ann.annID }}'>
-            {{ announcement(ann.title, ann.name, ann.timestamp, ann.attachments=None, ann.content, ann.allowed_edit) }}
+            {{ announcement(ann.title, ann.name, ann.timestamp, ann.attachments, ann.content, ann.allowed_edit) }}
         </a>
     {% endfor %}
 {% endblock %}
