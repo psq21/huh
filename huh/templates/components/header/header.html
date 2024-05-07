@@ -40,9 +40,9 @@
         </div>
         <div class="flex-none">
             {% if current_user.is_anonymous %}
-                Not logged in
+                <p>Not logged in</p>
             {% else %}
-                {{ current_user.name }}
+                <p>{{ current_user.name }}</p>
             {% endif %}
         </div>
     </div>
