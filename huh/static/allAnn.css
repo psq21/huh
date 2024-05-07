@@ -1,4 +1,48 @@
 h1 {
     text-align: center;
-    
+    font-family: inter, sans-serif;
+    font-size: large;
+}
+
+/* announcement */
+.ann {
+    border-style: solid;
+    border-color: darkgreen;
+    border-width: 2px;
+    border-radius: 10px;
+    background-color: darkolivegreen;
+    color: black;
+}
+
+.title {
+    text-align: left;
+    font-family: inter, sans-serif;
+    font-size: medium;
+}
+
+.ann tr {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: darkgreen;
+}
+
+.name {
+    text-align: left;
+    font-family: inter, sans-serif;
+    font-size: x-small;
+}
+
+.timestamp {
+    text-align: left;
+    font-family: inter, sans-serif;
+    font-size: xx-small;
+}
+
+.att {
+    text-align: center;
+    background-color: lightslategray;
+    color: black;
+    padding: 0.5em;
+    margin: 1em;
+    border-radius: 4px;
 }
