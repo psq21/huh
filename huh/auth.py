@@ -73,7 +73,7 @@ def login():
         return render_template("login.html", error=str(e))
 
     with db.connect() as conn:
-        user = User.by_column(conn, "email", normalised_email)
+        user = next(User.by_column(conn, "email", normalised_email), None)
 
         if not user or not check_password_hash(user.hash, password):
             return render_template(

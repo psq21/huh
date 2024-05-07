@@ -55,25 +55,50 @@ class Entry:
         self.id = id
 
     def __eq__(self, other: Self):
+        assert isinstance(other, self.__class__)
         return self.id == other.id
 
     def __ne__(self, other: Self):
+        assert isinstance(other, self.__class__)
         return self.id != other.id
 
     @classmethod
-    def by_column(cls, conn: sqlite3.Connection, field: str, value: Any):
+    def by_column(cls, conn: sqlite3.Connection, column: str, value: Any):
         cur = conn.cursor()
         res = cur.execute(
-            f"SELECT rowid AS id, * FROM {cls.table_name} WHERE {field} = ?",
+            f"SELECT rowid AS id, * FROM {cls.table_name} WHERE {column} = ?",
             (value,),
         )
-        data = res.fetchone()
 
-        return cls(*data) if data else None
+        return (cls(*row) for row in res)
 
     @classmethod
     def by_id(cls, conn: sqlite3.Connection, id: int):
-        return cls.by_column(conn, "id", id)
+        return next(cls.by_column(conn, "id", id), None)
+
+    @classmethod
+    def id_exists(cls, conn: sqlite3.Connection, id: int):
+        cur = conn.cursor()
+        res = cur.execute(
+            f"SELECT 1 FROM {cls.table_name} WHERE rowid = ?",
+            (id,),
+        )
+
+        return False if res.fetchone() is None else True
+
+    @classmethod
+    def get_columns_by_id(cls, conn: sqlite3.Connection, columns: list[str], id: int):
+        cur = conn.cursor()
+        res = cur.execute(
+            f"SELECT {', '.join(columns)} FROM {cls.table_name} WHERE rowid = ?",
+            (id,),
+        )
+
+        return res.fetchone()
+
+    @classmethod
+    def get_column_by_id(cls, conn: sqlite3.Connection, column: str, id: int):
+        return cls.get_columns_by_id(cls, conn, [column], id)
 
     @classmethod
     def all(cls, conn: sqlite3.Connection):
