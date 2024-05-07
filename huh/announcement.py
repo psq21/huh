@@ -12,10 +12,14 @@ def allAnn():
     if request.method=='GET': #return page of all announcements
         conn = connect()
         data = Announcement.all_ann_w_name(conn)
-        if data['userID']==current_user.id:
-            data['allowed_edit'] = True 
-        else:
-            data['allowed_edit'] = False
+        for ann in data:
+            if not current_user.is_authenticated:
+                ann['allowed_edit'] = False
+            
+            elif ann['userID']==current_user.id:
+                ann['allowed_edit'] = True 
+            else:
+                ann['allowed_edit'] = False
         conn.close()
         return render_template('allAnn.html',anns=data)
 
@@ -27,8 +31,11 @@ def oneAnn(annID):
         ann = Announcement.one_ann(conn,annID)
         attachments = Announcement.one_ann_attachments(conn,annID)
         comments = Announcement.one_ann_comments(conn,annID)
+        print(comments)
         for comm in comments:
-            if comm['author_id']==current_user.id:
+            if not current_user.is_authenticated:
+                comm['allowed_edit'] = False
+            elif comm['author_id']==current_user.id:
                 comm['allowed_edit'] = True 
             else:
                 comm['allowed_edit'] = False
