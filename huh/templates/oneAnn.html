@@ -1,5 +1,6 @@
 {% extends 'common/index.html' %}
 {% from 'components/announcement/announcement.html' import announcement with context %}
+{% from 'components/comment/comment.html' import comment with context %}
 {% block head %}
     {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='oneAnn.css') }}">
