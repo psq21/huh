@@ -5,11 +5,11 @@
                 <td class="title">{{ title }}</td>
                 <td>
                     {% if allowed_edit %}
-                    <button class="btn btn-circle btn-sm col-[3] edit-btn">
-                        <img src="{{ url_for('static', filename='pencil.svg') }}"
-                             class="h-4 w-4"
-                             alt="Edit" />
-                    </button>
+                        <button class="btn btn-circle btn-sm col-[3] edit-btn">
+                            <img src="{{ url_for('static', filename='pencil.svg') }}"
+                                 class="h-4 w-4"
+                                 alt="Edit" />
+                        </button>
                     {% endif %}
                 </td>
             </tr>

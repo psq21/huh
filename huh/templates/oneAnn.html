@@ -3,12 +3,13 @@
 {% from 'components/comment/comment.html' import comment with context %}
 {% block head %}
     {{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='oneAnn.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='oneAnn.css') }}">
 {% endblock %}
 {% block content %}
     {{ announcement(ann.title, ann.name, ann.timestamp, attachments, ann.content, ann.allowed_edit) }}
-<h1>Comments</h1>
-{% for comm in comments %}
-    {{ comment(comm.rowid, comm.name, comm.content, comm.timestamp, comm.allowed_edit) }}
-{% endfor %}
+    <h1>Comments</h1>
+    {% for comm in comments %}
+        {{ comment(comm.rowid, comm.name, comm.content, comm.timestamp, comm.allowed_edit) }}
+    {% endfor %}
 {% endblock %}

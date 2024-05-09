@@ -1,24 +1,31 @@
 {% extends 'common/index.html' %}
 {% block head %}
-<link rel="stylesheet" href="{{ url_for('static',filename=createAnn.css) }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static',filename=createAnn.css) }}">
 {% endblock %}
 {% block content %}
-<h1>Create, edit or delete announcement</h1>
-<form enctype="multipart/form-data">
-    <table>
-        <tr>
-            <td>Title</td>
-            <td><input type="text" name="title" value="{{ prev.title }}"></td>
-        </tr>
-        <tr>
-            <td>Content</td>
-            <td><input type="text" name="content" value="{{ prev.content }}"></td>
-        </tr>
-    </table>
-    <!-- wait idk how to get multiple file uploads I will figure this out later -->
-    <label for="attachments">Reupload attachments</label>
-    <input type="file" id="attachments" name="attachments" multiple>
-    <input type="submit">
-    <a href="{{ url_for('announcement',filename='prev.id')}}"><button type="submit" value="Delete"></button></a>
-</form>
+    <h1>Create, edit or delete announcement</h1>
+    <form enctype="multipart/form-data">
+        <table>
+            <tr>
+                <td>Title</td>
+                <td>
+                    <input type="text" name="title" value="{{ prev.title }}">
+                </td>
+            </tr>
+            <tr>
+                <td>Content</td>
+                <td>
+                    <input type="text" name="content" value="{{ prev.content }}">
+                </td>
+            </tr>
+        </table>
+        <!-- wait idk how to get multiple file uploads I will figure this out later -->
+        <label for="attachments">Reupload attachments</label>
+        <input type="file" id="attachments" name="attachments" multiple>
+        <input type="submit">
+        <a href="{{ url_for('announcement',filename='prev.id') }}">
+            <button type="submit" value="Delete"></button>
+        </a>
+    </form>
 {% endblock %}

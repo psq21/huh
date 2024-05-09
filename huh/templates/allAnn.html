@@ -2,7 +2,8 @@
 {% from 'components/announcement/announcement.html' import announcement with context %}
 {% block head %}
     {{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='allAnn.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='allAnn.css') }}">
 {% endblock %}
 {% block content %}
     <h1>Announcements</h1>
