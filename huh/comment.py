@@ -1,5 +1,5 @@
 from flask_login import login_required, current_user
-from flask import render_template, Blueprint, request, abort
+from flask import Blueprint, request, abort
 from huh.db import Comment, connect
 
 bp = Blueprint("comment", __name__, url_prefix="/comment")
