@@ -17,7 +17,7 @@
         <p class="name">{{ name }}</p>
         <p class="timestamp">{{ timestamp }}</p>
         {% for att in attachments %}
-            <a href="{{ url_for('attachments',filename=att.name) }}"><span class="att">{{ att.name }}</span></a>
+            <a href="{{ url_for('attachments', filename='att.name') }}"><span class="att">{{ att.name }}</span></a>
         {% endfor %}
         <p class="content">{{ content }}</p>
     </div>
