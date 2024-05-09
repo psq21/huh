@@ -1,11 +1,11 @@
 {% extends 'common/index.html' %}
 {% block head %}
     <link rel="stylesheet"
-          href="{{ url_for('static',filename=createAnn.css) }}">
+          href="{{ url_for('static',filename='createAnn.css') }}">
 {% endblock %}
 {% block content %}
     <h1>Create, edit or delete announcement</h1>
-    <form enctype="multipart/form-data">
+    <form enctype="multipart/form-data" action="/announcement/create" method="POST">
         <table>
             <tr>
                 <td>Title</td>
@@ -24,8 +24,11 @@
         <label for="attachments">Reupload attachments</label>
         <input type="file" id="attachments" name="attachments" multiple>
         <input type="submit">
-        <a href="{{ url_for('announcement',filename='prev.id') }}">
-            <button type="submit" value="Delete"></button>
-        </a>
+        {% if prev.id %}
+            <a href="{{ url_for('announcement',filename='prev.id') }}">
+                <button type="submit" value="Delete"></button>
+            </a>
+        {% endif %}
+        
     </form>
 {% endblock %}
