@@ -2,13 +2,12 @@
 {% from 'components/announcement/announcement.html' import announcement with context %}
 {% from 'components/comment/comment.html' import comment with context %}
 {% block head %}
-    {{ super() }}
     <link rel="stylesheet"
           href="{{ url_for('static', filename='oneAnn.css') }}">
 {% endblock %}
 {% block content %}
-    {{ announcement(ann.title, ann.name, ann.timestamp, attachments, ann.content, ann.allowed_edit) }}
-    <h1>Comments</h1>
+    {{ announcement(ann.annID, ann.title, ann.name, ann.timestamp, attachments, ann.content, ann.allowed_edit) }}
+    <h1 id="commHeader">Comments</h1>
     {% for comm in comments %}
         {{ comment(comm.rowid, comm.name, comm.content, comm.timestamp, comm.allowed_edit) }}
     {% endfor %}

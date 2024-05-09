@@ -1,0 +1,55 @@
+/* announcement */
+.ann {
+    background-color: rgb(197, 222, 237);
+    border-radius: 1em;
+    margin: 1em;
+    padding: 1em;
+}
+
+.ann .edit {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.ann .title {
+    text-align: left;
+    font-size: 1.5em;
+    color: black;
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    border-bottom-color: black;
+}
+
+.ann .name {
+    text-align: left;
+    font-size: 0.8em;
+    color: black;
+}
+
+.ann .timestamp {
+    text-align: left;
+    font-size: 0.5em;
+    color: black;
+}
+
+.ann .att {
+    text-align: center;
+    font-size: 1em;
+    background-color: grey;
+    color: black;
+    border-radius: 1em;
+}
+
+.ann .content {
+    text-align: left;
+    font-size: 1.2em;
+    color: black;
+    margin: 0.5em;
+}
+
+#commHeader {
+    font-size: 20px;
+    margin-left: 2em;
+    margin-bottom: 1em;
+}

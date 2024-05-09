@@ -1,48 +1,54 @@
-h1 {
+#annHeader {
     text-align: center;
-    font-family: inter, sans-serif;
-    font-size: large;
+    font-size: 30px;
 }
 
 /* announcement */
 .ann {
-    border-style: solid;
-    border-color: darkgreen;
-    border-width: 2px;
-    border-radius: 10px;
-    background-color: darkolivegreen;
-    color: black;
-}
-
-.title {
-    text-align: left;
-    font-family: inter, sans-serif;
-    font-size: medium;
-}
-
-.ann tr {
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    border-bottom-color: darkgreen;
-}
-
-.name {
-    text-align: left;
-    font-family: inter, sans-serif;
-    font-size: x-small;
-}
-
-.timestamp {
-    text-align: left;
-    font-family: inter, sans-serif;
-    font-size: xx-small;
-}
-
-.att {
-    text-align: center;
-    background-color: lightslategray;
-    color: black;
-    padding: 0.5em;
+    background-color: rgb(197, 222, 237);
+    border-radius: 1em;
     margin: 1em;
-    border-radius: 4px;
+    padding: 1em;
+}
+
+.ann .edit {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.ann .title {
+    text-align: left;
+    font-size: 1.5em;
+    color: black;
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    border-bottom-color: black;
+}
+
+.ann .name {
+    text-align: left;
+    font-size: 0.8em;
+    color: black;
+}
+
+.ann .timestamp {
+    text-align: left;
+    font-size: 0.5em;
+    color: black;
+}
+
+.ann .att {
+    text-align: center;
+    font-size: 1em;
+    background-color: grey;
+    color: black;
+    border-radius: 1em;
+}
+
+.ann .content {
+    text-align: left;
+    font-size: 1.2em;
+    color: black;
+    margin: 0.5em;
 }
