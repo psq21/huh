@@ -63,13 +63,15 @@ def createAnn():
         fileData = request.files
 
         ann = Announcement.create(conn, userID, formData["title"], formData["content"])
-        upload_path =  f'{os.getcwd()}/attachments/{ann.id}'
+        upload_path = f"{os.getcwd()}/attachments/{ann.id}"
+
         if not os.path.exists(upload_path):
             os.makedirs(upload_path)
         for att in fileData.getlist("attachments"):
-            
+
             attName = secure_filename(att.filename)
-            att.save(f'{upload_path}/{attName}')
+            att.save(f"{upload_path}/{attName}")
+            os.chmod(f"{upload_path}/{attName}", 0o777)
             Attachment.create(conn, ann.id, attName)
         conn.close()
 
