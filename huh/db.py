@@ -282,6 +282,10 @@ class Attachment(Entry):
         conn.commit()
 
         return Attachment(id, annID, name)
+    
+    @staticmethod
+    def get_file(annID: int, name: str):
+        return os.path.join(os.getcwd(), "attachments", str(annID), name)
 
     @staticmethod
     def delete_w_ann(conn: sqlite3.Connection, annID: int):
