@@ -7,8 +7,44 @@
 {% endblock %}
 {% block content %}
     {{ announcement(ann.annID, ann.title, ann.name, ann.timestamp, attachments, ann.content, ann.allowed_edit) }}
-    <h1 id="commHeader">Comments</h1>
+    <div class="flex flex-col p-10">
+      <h1 id="commHeader">Comments</h1>
+      <textarea id="comment" class="w-full h-20" placeholder="Write a comment" ></textarea>
+      <button class="btn create-button">Create</button>
+      <button class="btn btn-error cancel-button">Cancel</button>
+    </div>
+    
     {% for comm in comments %}
         {{ comment(comm.rowid, comm.name, comm.content, comm.timestamp, comm.allowed_edit) }}
     {% endfor %}
+    
+    <div class="collapse annid">{{ann.annID}}</div>
+    <script>
+      document.querySelector('.create-button').addEventListener('click', () => {
+        const comment = document.querySelector('#comment').value
+        const id = document.querySelector('.annid').innerText
+        console.log(id, document.querySelector('.annid').innerHTML, comment)
+        createComment(id, comment)
+        
+      })
+
+      document.querySelector('.cancel-button').addEventListener('click', () => {
+        document.querySelector('#comment').value = ''
+      })
+
+
+      function createComment(id, content) {
+        const fd = new FormData()
+        fd.append('content', content)
+        fd.append('announcement_id', id)
+
+        // returns 204
+        fetch('/comment/create', {
+          method: 'POST',
+          body: fd
+        }).then(() => {
+          window.location.reload()
+        })
+      }
+    </script>
 {% endblock %}
