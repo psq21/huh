@@ -134,7 +134,7 @@ def editAnn(annID):
             Attachment.create(conn, annID, attName)
         '''
 
-        return render_template("allAnn.html")
+        return redirect("/announcement/all")
 
 
 @login_required
