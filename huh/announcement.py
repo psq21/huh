@@ -1,4 +1,12 @@
-from flask import Blueprint, render_template, redirect, url_for, request, abort, send_file
+from flask import (
+    Blueprint,
+    render_template,
+    redirect,
+    url_for,
+    request,
+    abort,
+    send_file,
+)
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 import os
@@ -110,14 +118,13 @@ def editAnn(annID):
         except KeyError:
             abort(400)
         conn = connect()
-        
+
         if fileData.getlist("attachments")[0].stream.read() == b"":
             fileData = None
-        
+
         Announcement.update_announcement(conn, annID, title, content, fileData)
 
-
-        '''
+        """
         # delete old announcement, comments and attachments
         Announcement.delete_w_ann(annID)
         Comment.delete_w_ann(annID)
@@ -132,7 +139,7 @@ def editAnn(annID):
             attName = secure_filename(att.filename)
             att.save(url_for("attachments", filename=attName))
             Attachment.create(conn, annID, attName)
-        '''
+        """
 
         return render_template("allAnn.html")
 
@@ -160,7 +167,6 @@ def delAnn(annID: str):
 def get_attachment(annID: str, name: str):
     if not annID.isdigit():
         abort(400)
-    
+
     file = Attachment.get_file(annID, name)
     return send_file(file)
-

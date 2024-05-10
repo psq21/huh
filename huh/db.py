@@ -230,14 +230,22 @@ class Announcement(Entry):
         cur.row_factory = sqlite3.Row
         res = cur.execute("SELECT * FROM Attachment WHERE announcement_id=?", (annID,))
         return [dict(row) for row in res.fetchall()]
-    
+
     @staticmethod
-    def update_announcement(conn: sqlite3.Connection, annID: int, title: str, content: str, attachments: ImmutableMultiDict[str, FileStorage] | None):
+    def update_announcement(
+        conn: sqlite3.Connection,
+        annID: int,
+        title: str,
+        content: str,
+        attachments: ImmutableMultiDict[str, FileStorage] | None,
+    ):
         cur = conn.cursor()
-        cur.execute("UPDATE Announcement SET title=?, content=? WHERE rowid=?", (title, content, annID))
+        cur.execute(
+            "UPDATE Announcement SET title=?, content=? WHERE rowid=?",
+            (title, content, annID),
+        )
 
         # perform a diffing operation to determine which files to delete
-        
 
         existing = Attachment.by_column(conn, "announcement_id", annID)
         existing_files = {att.name for att in existing}
@@ -249,9 +257,12 @@ class Announcement(Entry):
 
         print(del_files, add_files)
         for filename in del_files:
-            cur.execute("DELETE FROM Attachment WHERE announcement_id=? AND name=?", (annID, filename))
+            cur.execute(
+                "DELETE FROM Attachment WHERE announcement_id=? AND name=?",
+                (annID, filename),
+            )
             os.remove(os.path.join(os.getcwd(), "attachments", str(annID), filename))
-        
+
         for filename in add_files:
             att = attachments.get(filename)
             print(att)
@@ -259,7 +270,7 @@ class Announcement(Entry):
             Attachment.create(conn, annID, filename)
 
         conn.commit()
-        return 
+        return
 
 
 class Attachment(Entry):
@@ -282,7 +293,7 @@ class Attachment(Entry):
         conn.commit()
 
         return Attachment(id, annID, name)
-    
+
     @staticmethod
     def get_file(annID: int, name: str):
         return os.path.join(os.getcwd(), "attachments", str(annID), name)

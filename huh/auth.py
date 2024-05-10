@@ -41,7 +41,6 @@ def signup():
     if errors:
         return render_template("signup.html", error="\n".join(errors))
 
-
     hash = generate_password_hash(password)
 
     with db.connect() as conn:
