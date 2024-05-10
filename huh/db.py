@@ -203,7 +203,7 @@ class Announcement(Entry):
         cur.row_factory = sqlite3.Row
         res = cur.execute(
             """
-            SELECT Announcement.rowid as annID,title,timestamp,content, User.name
+            SELECT Announcement.rowid AS annID,title,timestamp,content, User.name, User.rowid AS userID
             FROM Announcement JOIN User ON Announcement.author_id=User.rowid
             WHERE Announcement.rowid=?
             """,

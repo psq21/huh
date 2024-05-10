@@ -47,10 +47,18 @@ def allAnn():
 def oneAnn(annID):
     if request.method == "GET":  # return page of one announcement
         conn = connect()
-        ann = Announcement.one_ann(conn, annID)
-        attachments = Announcement.one_ann_attachments(conn, annID)
-        comments = Announcement.one_ann_comments(conn, annID)
 
+        ann = Announcement.one_ann(conn, annID)
+        if not current_user.is_authenticated:
+            ann['allowed_edit'] = False
+        elif ann['userID'] == current_user.id:
+            ann["allowed_edit"] = True
+        else:
+            ann['allowed_edit'] = False
+
+        attachments = Announcement.one_ann_attachments(conn, annID)
+
+        comments = Announcement.one_ann_comments(conn, annID)
         for comm in comments:
             if not current_user.is_authenticated:
                 comm["allowed_edit"] = False
@@ -61,7 +69,7 @@ def oneAnn(annID):
 
         conn.close()
         return render_template(
-            "oneAnn.html", ann=ann, comments=comments, attachments=attachments
+            "oneAnn.html", ann=ann, comments=comments, attachments=attachments, 
         )
 
 
