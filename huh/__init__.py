@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 # app.secret_key = secrets.token_urlsafe(16)
 # revert this change later
-app.secret_key = 'b'
+app.secret_key = "b"
 
 app.register_blueprint(auth.bp)
 app.register_blueprint(comment.bp)

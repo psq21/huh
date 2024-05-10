@@ -1,23 +1,25 @@
 {% macro announcement(id, title, name, timestamp, attachments, content, allowed_edit) %}
-<div class="ann">
-    <div class="edit">
-        {% if allowed_edit %}
-        <a href="../edit/{{ id }}">
-            <button class="btn btn-circle btn-sm col-[3] edit-btn">
-                <img src="{{ url_for('static', filename='pencil.svg') }}" class="h-4 w-4" alt="Edit" />
-            </button>
-        </a>
-        {% endif %}
+    <div class="ann">
+        <div class="edit">
+            {% if allowed_edit %}
+                <a href="../edit/{{ id }}">
+                    <button class="btn btn-circle btn-sm col-[3] edit-btn">
+                        <img src="{{ url_for('static', filename='pencil.svg') }}"
+                             class="h-4 w-4"
+                             alt="Edit" />
+                    </button>
+                </a>
+            {% endif %}
+        </div>
+        <p class="title">{{ title }}</p>
+        <p class="name">{{ name }}</p>
+        <p class="timestamp">{{ timestamp }}</p>
+        {% for att in attachments %}
+            <!-- ok attachments does NOT work, come back to this later-->
+            <a href="{{ url_for('attachments', filename='att.name') }}"><span class="att">
+                <p>{{ att.name }}</p>
+            </span></a>
+        {% endfor %}
+        <p class="content">{{ content }}</p>
     </div>
-    <p class="title">{{ title }}</p>
-    <p class="name">{{ name }}</p>
-    <p class="timestamp">{{ timestamp }}</p>
-    {% for att in attachments %}
-    <!-- ok attachments does NOT work, come back to this later-->
-    <a href="{{ url_for('attachments', filename='att.name') }}"><span class="att">
-            <p>{{ att.name }}</p>
-        </span></a>
-    {% endfor %}
-    <p class="content">{{ content }}</p>
-</div>
 {% endmacro %}

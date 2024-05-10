@@ -1,8 +1,5 @@
 {% extends 'common/index.html' %}
-{% block head %}
-    <link rel="stylesheet"
-          href="{{ url_for('static',filename='cudAnn.css') }}">
-{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='cudAnn.css') }}">{% endblock %}
 {% block content %}
     <h1 id="cudHeader">Create, edit or delete announcement</h1>
     <form enctype="multipart/form-data" method="POST">
@@ -21,7 +18,7 @@
             </tr>
         </table>
         <!-- wait idk how to get multiple file uploads I will figure this out later -->
-        <label for="attachments">Reupload attachments: </label>
+        <label for="attachments">Reupload attachments:</label>
         <input type="file" id="attachments" name="attachments" multiple>
         <input type="submit">
         {% if prev.id %}
@@ -29,6 +26,5 @@
                 <button type="submit" value="Delete"></button>
             </a>
         {% endif %}
-        
     </form>
 {% endblock %}
