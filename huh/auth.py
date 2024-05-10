@@ -37,6 +37,11 @@ def signup():
     if not 3 <= len(password) <= 64:
         errors.append("Password should be between 3 and 64 characters long")
 
+    # do not proceed if there are errors
+    if errors:
+        return render_template("signup.html", error="\n".join(errors))
+
+
     hash = generate_password_hash(password)
 
     with db.connect() as conn:
