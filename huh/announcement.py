@@ -1,7 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template, redirect, url_for, request, abort
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from werkzeug.datastructures import FileStorage
 import sqlite3, os
 
 from huh.db import connect, Announcement, Attachment, Comment
@@ -129,12 +128,17 @@ def editAnn(annID):
 
 @login_required
 @bp.route("/delete/<annID>/", methods=["GET", "POST"])
-def delAnn(annID):
+def delAnn(annID: str):
+    if not annID.isdigit():
+        abort(400)
+
     if request.method == "GET":
-        Announcement.delete_w_ann(annID)
-        Comment.delete_w_ann(annID)
-        delFiles = Attachment.delete_w_ann(annID)
+
+        with connect() as conn:
+            Announcement.delete_w_ann(conn, annID)
+            Comment.delete_w_ann(conn, annID)
+            delFiles = Attachment.delete_w_ann(conn, annID)
         for filename in delFiles:
             os.remove(url_for("attachments", filename=filename))
 
-        return redirect(url_for(allAnn))
+        return redirect("/announcement/all/")

@@ -20,10 +20,6 @@
         <label for="attachments">Reupload attachments:</label>
         <input type="file" id="attachments" name="attachments" multiple>
         <input type="submit">
-        {% if prev.id %}
-            <a href="{{ url_for('announcement',filename='prev.id') }}">
-                <button type="submit" value="Delete"></button>
-            </a>
-        {% endif %}
+        {% if prev.annID %}<a href="/announcement/delete/{{ prev.annID }}">delete</a>{% endif %}
     </form>
 {% endblock %}
