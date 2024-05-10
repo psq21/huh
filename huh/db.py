@@ -250,7 +250,7 @@ class Announcement(Entry):
         existing = Attachment.by_column(conn, "announcement_id", annID)
         existing_files = {att.name for att in existing}
 
-        new_files = set([secure_filename(att.filename) for att in attachments.values()])
+        new_files = set() if attachments==None else set([secure_filename(att.filename) for att in attachments.values()])
 
         del_files = existing_files - new_files
         add_files = new_files - existing_files
@@ -264,7 +264,7 @@ class Announcement(Entry):
             os.remove(os.path.join(os.getcwd(), "attachments", str(annID), filename))
 
         for filename in add_files:
-            att = attachments.get(filename)
+            att = attachments.get('attachments',filename)
             print(att)
             att.save(os.path.join(os.getcwd(), "attachments", str(annID), filename))
             Attachment.create(conn, annID, filename)
