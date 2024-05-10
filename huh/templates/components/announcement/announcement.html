@@ -1,3 +1,4 @@
+{% from 'components/attachment/attachment.html' import attachment with context %}
 {% macro announcement(id, title, name, timestamp, attachments, content, allowed_edit) %}
     <div class="ann">
         <div class="edit">
@@ -16,9 +17,7 @@
         <p class="timestamp">{{ timestamp }}</p>
         {% for att in attachments %}
             <!-- ok attachments does NOT work, come back to this later-->
-            <a href="{{ url_for('attachments', filename='att.name') }}"><span class="att">
-                <p>{{ att.name }}</p>
-            </span></a>
+            {{ attachment(id, att.name) }}
         {% endfor %}
         <p class="content">{{ content }}</p>
     </div>

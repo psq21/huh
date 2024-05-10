@@ -1,0 +1,8 @@
+{% macro attachment(announcement_id, name) %}
+    <div class="card p-3 bg-base-100 shadow-xl">
+        <h2 class="card-title">
+            <a target="_blank"
+               href="/announcement/{{ announcement_id }}/attachment/{{ name }}">{{ name }}</a>
+        </h2>
+    </div>
+{% endmacro %}
