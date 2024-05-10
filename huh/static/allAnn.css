@@ -1,13 +1,14 @@
 #annHeader {
     text-align: center;
-    font-size: 30px;
+    font-size: 50px;
+    text-decoration: underline;
 }
 
 /* announcement */
 .ann {
     background-color: rgb(197, 222, 237);
     border-radius: 1em;
-    margin: 1em;
+    margin: 2em;
     padding: 1em;
     cursor: pointer;
 }
@@ -20,13 +21,20 @@
 
 .ann .title {
     text-align: left;
-    font-size: 1.5em;
+    font-size: 2em;
     color: black;
     border-bottom-style: solid;
     border-bottom-width: 2px;
     border-bottom-color: black;
 }
 
+.ann .author {
+    text-align: left;
+    font-size: 14px;
+    color: black;
+}
+
+/*
 .ann .name {
     text-align: left;
     font-size: 0.8em;
@@ -38,6 +46,7 @@
     font-size: 0.5em;
     color: black;
 }
+*/
 
 .ann .att {
     text-align: center;
@@ -51,5 +60,5 @@
     text-align: left;
     font-size: 1.2em;
     color: black;
-    margin: 0.5em;
+    margin-top: 1em;
 }

@@ -8,11 +8,58 @@ table {
     margin-bottom: 5px;
 }
 
-td{
+tr {
+    text-align: left;
+}
+
+th {
     font-size: 18px;
+    margin: 10px;
+}
+
+td{
+    font-size: 14px;
+}
+
+#title {
+    margin: 10px;
+    padding: 8px 8px;
+    width: 400%;
+}
+
+#content {
+    margin: 10px;
+    padding: 8px 8px;
+    width: 400%;
 }
 
 label {
     font-size: 18px;
     margin: 20px;
+}
+
+input[type='submit'] {
+    margin-left: 20px;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    padding: 5px;
+    background-color: rgb(99, 99, 99);
+    color: white;
+    border-radius: 2px;
+    font-size: 15px;
+    text-align: center;
+}
+
+#delete {
+    display: block;
+    margin-left: 20px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    padding: 5px;
+    width: 60px;
+    background-color: rgb(232, 60, 60);
+    color: white;
+    border-radius: 2px;
+    font-size: 15px;
+    text-align: center;
 }

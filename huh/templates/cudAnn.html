@@ -5,21 +5,21 @@
     <form enctype="multipart/form-data" method="POST">
         <table>
             <tr>
-                <td>Title:</td>
+                <th>Title:</th>
                 <td>
-                    <input type="text" name="title" value="{{ prev.title }}">
+                    <textarea id="title" name="title" required>{{ prev.title }}</textarea>
                 </td>
             </tr>
             <tr>
-                <td>Content:</td>
+                <th>Content:</th>
                 <td>
-                    <input type="text" name="content" value="{{ prev.content }}">
+                    <textarea id="content" name="content" required>{{ prev.content }}</textarea>
                 </td>
             </tr>
         </table>
         <label for="attachments">Reupload attachments:</label>
         <input type="file" id="attachments" name="attachments" multiple>
-        <input type="submit">
-        {% if prev.annID %}<a href="/announcement/delete/{{ prev.annID }}">delete</a>{% endif %}
+        <p><input type="submit"></p>
+        {% if prev.annID %}<a href="/announcement/delete/{{ prev.annID }}" id="delete">Delete</a>{% endif %}
     </form>
 {% endblock %}
