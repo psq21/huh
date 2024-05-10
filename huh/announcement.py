@@ -103,11 +103,21 @@ def editAnn(annID):
         return render_template("cudAnn.html", prev=data)
 
     elif request.method == "POST":
-        conn = connect()
         formData = request.form
         fileData = request.files
-        userID = current_user.id
+        try:
+            title, content = formData["title"], formData["content"]
+        except KeyError:
+            abort(400)
+        conn = connect()
+        
+        if fileData.getlist("attachments")[0].stream.read() == b"":
+            fileData = None
+        
+        Announcement.update_announcement(conn, annID, title, content, fileData)
 
+
+        '''
         # delete old announcement, comments and attachments
         Announcement.delete_w_ann(annID)
         Comment.delete_w_ann(annID)
@@ -122,6 +132,7 @@ def editAnn(annID):
             attName = secure_filename(att.filename)
             att.save(url_for("attachments", filename=attName))
             Attachment.create(conn, annID, attName)
+        '''
 
         return render_template("allAnn.html")
 

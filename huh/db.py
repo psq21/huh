@@ -2,6 +2,9 @@ from flask_login import UserMixin
 from datetime import datetime
 import sqlite3
 from typing import Any, Self
+from werkzeug.datastructures import ImmutableMultiDict, FileStorage
+from werkzeug.utils import secure_filename
+import os
 
 DB_PATH = "app.db"
 
@@ -227,6 +230,36 @@ class Announcement(Entry):
         cur.row_factory = sqlite3.Row
         res = cur.execute("SELECT * FROM Attachment WHERE announcement_id=?", (annID,))
         return [dict(row) for row in res.fetchall()]
+    
+    @staticmethod
+    def update_announcement(conn: sqlite3.Connection, annID: int, title: str, content: str, attachments: ImmutableMultiDict[str, FileStorage] | None):
+        cur = conn.cursor()
+        cur.execute("UPDATE Announcement SET title=?, content=? WHERE rowid=?", (title, content, annID))
+
+        # perform a diffing operation to determine which files to delete
+        
+
+        existing = Attachment.by_column(conn, "announcement_id", annID)
+        existing_files = {att.name for att in existing}
+
+        new_files = set([secure_filename(att.filename) for att in attachments.values()])
+
+        del_files = existing_files - new_files
+        add_files = new_files - existing_files
+
+        print(del_files, add_files)
+        for filename in del_files:
+            cur.execute("DELETE FROM Attachment WHERE announcement_id=? AND name=?", (annID, filename))
+            os.remove(os.path.join(os.getcwd(), "attachments", str(annID), filename))
+        
+        for filename in add_files:
+            att = attachments.get(filename)
+            print(att)
+            att.save(os.path.join(os.getcwd(), "attachments", str(annID), filename))
+            Attachment.create(conn, annID, filename)
+
+        conn.commit()
+        return 
 
 
 class Attachment(Entry):
