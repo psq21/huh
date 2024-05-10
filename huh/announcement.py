@@ -1,11 +1,21 @@
 from flask import Blueprint, render_template, redirect, url_for, request
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import FileStorage
 import sqlite3, os
 
 from huh.db import connect, Announcement, Attachment, Comment
 
 bp = Blueprint("announcement", __name__, url_prefix="/announcement")
+
+
+def opener(path, flags):
+    return os.open(path, flags, 0o777)
+
+
+os.umask(
+    0
+)  # Without this, the created file will have 0o777 - 0o022 (default umask) = 0o755 permissions
 
 
 @bp.route("/all/", methods=["GET", "POST"])
@@ -63,15 +73,20 @@ def createAnn():
         fileData = request.files
 
         ann = Announcement.create(conn, userID, formData["title"], formData["content"])
-        upload_path = f"{os.getcwd()}/attachments/{ann.id}"
+        upload_dir = os.path.join(os.getcwd(), "attachments", str(ann.id))
 
-        if not os.path.exists(upload_path):
-            os.makedirs(upload_path)
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir)
+        # check if there are attachments\
+        # [<FileStorage: '' ('application/octet-stream')>] if no attachments
+        if fileData.getlist("attachments")[0].stream.read() == b"":
+            conn.close()
+            return redirect(url_for("announcement.allAnn"))
         for att in fileData.getlist("attachments"):
-
             attName = secure_filename(att.filename)
-            att.save(f"{upload_path}/{attName}")
-            os.chmod(f"{upload_path}/{attName}", 0o777)
+            fp = os.path.join(upload_dir, attName)
+
+            att.save(fp)
             Attachment.create(conn, ann.id, attName)
         conn.close()
 
