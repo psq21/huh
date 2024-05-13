@@ -19,7 +19,9 @@
         </table>
         <label for="attachments">Reupload attachments:</label>
         <input type="file" id="attachments" name="attachments" multiple>
-        <p><input type="submit"></p>
+        <p>
+            <input type="submit">
+        </p>
         {% if prev.annID %}<a href="/announcement/delete/{{ prev.annID }}" id="delete">Delete</a>{% endif %}
     </form>
 {% endblock %}

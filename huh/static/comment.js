@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         chatBubble.textContent = newContent;
         originalContent = newContent;
         editBtn.innerHTML = `
-              <img src="static/pencil.svg"
+              <img src="../../static/pencil.svg"
                      class="h-4 w-4"
                      alt="Edit">
               `;
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
       editBtn.addEventListener("click", () => {
         chatBubble.textContent = originalContent;
         editBtn.innerHTML = `
-              <img src="static/pencil.svg"
+              <img src="../../static/pencil.svg"
                      class="h-4 w-4"
                      alt="Edit">
               `;

@@ -4,7 +4,7 @@
         <div class="edit">
             {% if allowed_edit %}
                 <a href="../edit/{{ id }}">
-                    <button class="btn btn-circle btn-sm col-[3] edit-btn">
+                    <button class="btn btn-circle btn-sm col-[3]">
                         <img src="{{ url_for('static', filename='pencil.svg') }}"
                              class="h-4 w-4"
                              alt="Edit" />
@@ -13,10 +13,8 @@
             {% endif %}
         </div>
         <p class="title">{{ title }}</p>
-        <p class="author">{{ name}} at {{ timestamp }}</p>
-        {% for att in attachments %}
-            {{ attachment(id, att.name) }}
-        {% endfor %}
+        <p class="author">{{ name }} at {{ timestamp }}</p>
+        {% for att in attachments %}{{ attachment(id, att.name) }}{% endfor %}
         <p class="content">{{ content }}</p>
     </div>
 {% endmacro %}

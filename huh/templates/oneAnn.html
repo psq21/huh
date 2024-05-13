@@ -8,17 +8,15 @@
 {% block content %}
     {{ announcement(ann.annID, ann.title, ann.name, ann.timestamp, attachments, ann.content, ann.allowed_edit) }}
     <div class="flex flex-col p-10">
-      <h1 id="commHeader">Comments</h1>
-      <textarea id="comment" class="w-full h-20" placeholder="Write a comment" ></textarea>
-      <button class="btn create-button">Create</button>
-      <button class="btn btn-error cancel-button">Cancel</button>
+        <h1 id="commHeader">Comments</h1>
+        <textarea id="comment" class="w-full h-20" placeholder="Write a comment"></textarea>
+        <button class="btn create-button">Create</button>
+        <button class="btn btn-error cancel-button">Cancel</button>
     </div>
-    
     {% for comm in comments %}
         {{ comment(comm.rowid, comm.name, comm.content, comm.timestamp, comm.allowed_edit) }}
     {% endfor %}
-    
-    <div class="collapse annid">{{ann.annID}}</div>
+    <div class="collapse annid">{{ ann.annID }}</div>
     <script>
       document.querySelector('.create-button').addEventListener('click', () => {
         const comment = document.querySelector('#comment').value
@@ -47,4 +45,5 @@
         })
       }
     </script>
+    <script src="{{ url_for('static', filename='comment.js' )}}" type="module"></script>
 {% endblock %}
