@@ -13,8 +13,10 @@
             {% endif %}
         </div>
         <p class="title">{{ title }}</p>
-        <p class="author">{{ name }} at {{ timestamp }}</p>
-        {% for att in attachments %}{{ attachment(id, att.name) }}{% endfor %}
+        <p class="author">{{ name}} at {{ timestamp|format_timestamp }}</p>
+        {% for att in attachments %}
+            {{ attachment(id, att.name) }}
+        {% endfor %}
         <p class="content">{{ content }}</p>
     </div>
 {% endmacro %}

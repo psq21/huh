@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask, render_template
 from flask_login import LoginManager
 import secrets
@@ -29,3 +30,8 @@ def user_loader(id):
 @app.route("/")
 def homepage():
     return render_template("index.html")
+
+
+@app.template_filter('format_timestamp')
+def format_timestamp(timestamp):
+    return datetime.fromtimestamp(timestamp)

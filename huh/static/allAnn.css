@@ -1,7 +1,8 @@
 #annHeader {
     text-align: center;
     font-size: 50px;
-    text-decoration: underline;
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
 }
 
 /* announcement */

@@ -265,7 +265,6 @@ class Announcement(Entry):
 
         for filename in add_files:
             att = attachments.get('attachments',filename)
-            print(att)
             att.save(os.path.join(os.getcwd(), "attachments", str(annID), filename))
             Attachment.create(conn, annID, filename)
 
