@@ -78,7 +78,7 @@ def oneAnn(annID):
 def createAnn():
     if request.method == "GET":
         prev = {"title": "", "content": ""}
-        return render_template("cudAnn.html", prev=prev)
+        return render_template("crudAnn.html", prev=prev)
 
     elif request.method == "POST":
 
@@ -116,7 +116,7 @@ def editAnn(annID):
         data = Announcement.one_ann(conn, annID)
         conn.close()
 
-        return render_template("cudAnn.html", prev=data)
+        return render_template("crudAnn.html", prev=data)
 
     elif request.method == "POST":
         formData = request.form
