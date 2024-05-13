@@ -17,7 +17,11 @@
                 </td>
             </tr>
         </table>
+        {% if prev.annID %}
         <label for="attachments">Reupload attachments:</label>
+        {% else %}
+        <label for="attachments">Upload attachments:</label>
+        {% endif %}
         <input type="file" id="attachments" name="attachments" multiple>
         <div style="display: flex;"><input class="button" type="submit">
         {% if prev.annID %}<a href="/announcement/delete/{{ prev.annID }}" id="delete">Delete</a>{% endif %}
