@@ -1,8 +1,8 @@
 {% macro comment(comment_id, author_name, content, timestamp, allowed_edit) %}
-    <div class="chat chat-start px-4">
+    <div class="chat chat-start px-4 ml-2">
         <div class="chat-header">
             {{ author_name }}
-            <time class="text-xs opacity-50">{{ timestamp }}</time>
+            <time class="text-xs opacity-50">{{ timestamp|format_timestamp }}</time>
         </div>
         <div class="chat-bubble shrink-0">
             <p>{{- content -}}</p>

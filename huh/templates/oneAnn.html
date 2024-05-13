@@ -9,9 +9,11 @@
     {{ announcement(ann.annID, ann.title, ann.name, ann.timestamp, attachments, ann.content, ann.allowed_edit) }}
     <div class="flex flex-col p-10">
         <h1 id="commHeader">Comments</h1>
-        <textarea id="comment" class="w-full h-20" placeholder="Write a comment"></textarea>
-        <button class="btn create-button">Create</button>
-        <button class="btn btn-error cancel-button">Cancel</button>
+        <textarea id="comment" class="textarea textarea-bordered" placeholder="Write a comment"></textarea>
+        <div class="flex ml-0 mt-3">
+        <button class="btn btn-sm btn-primary create-button mr-2">Create</button>
+        <button class="btn btn-sm btn-error cancel-button">Cancel</button>
+        </div>
     </div>
     {% for comm in comments %}
         {{ comment(comm.rowid, comm.name, comm.content, comm.timestamp, comm.allowed_edit) }}

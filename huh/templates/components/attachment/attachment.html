@@ -1,8 +1,7 @@
 {% macro attachment(announcement_id, name) %}
-    <div class="card p-3 bg-base-100 shadow-xl m-1">
-        <h2 class="card-title">
-            <a target="_blank"
-               href="/announcement/{{ announcement_id }}/attachment/{{ name }}">{{ name }}</a>
-        </h2>
-    </div>
+    <button class="btn btn-wide btn-sm m-1">
+        <a target="_blank"
+            href="/announcement/{{ announcement_id }}/attachment/{{ name }}"
+            style="min-width: 0; text-overflow: clip; overflow: hidden;">{{ name }}</a>
+    </button>
 {% endmacro %}

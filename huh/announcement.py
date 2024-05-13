@@ -132,23 +132,6 @@ def editAnn(annID):
 
         Announcement.update_announcement(conn, annID, title, content, fileData)
 
-        """
-        # delete old announcement, comments and attachments
-        Announcement.delete_w_ann(annID)
-        Comment.delete_w_ann(annID)
-        delFiles = Attachment.delete_w_ann(annID)
-        for filename in delFiles:
-            os.remove(url_for("attachments", filename=filename))
-
-        newAnn = Announcement.create(
-            conn, userID, formData["title"], formData["content"]
-        )
-        for att in fileData["attachments"]:
-            attName = secure_filename(att.filename)
-            att.save(url_for("attachments", filename=attName))
-            Attachment.create(conn, annID, attName)
-        """
-
         return redirect("/announcement/all")
 
 

@@ -1,19 +1,23 @@
 {% extends 'common/index.html' %}
 {% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='crudAnn.css') }}">{% endblock %}
 {% block content %}
-    <h1 id="crudHeader">Create, edit or delete announcement</h1>
+    {% if prev.annID %}
+    <h1 class="crudHeader">Edit or Delete Announcement</h1>
+    {% else %}
+    <h1 class="crudHeader">Create Announcement</h1>
+    {% endif %}
     <form enctype="multipart/form-data" method="POST">
         <table>
             <tr>
                 <th>Title:</th>
                 <td>
-                    <textarea id="title" name="title" required>{{ prev.title }}</textarea>
+                    <textarea id="title" name="title" class="textarea textarea-bordered" required>{{ prev.title }}</textarea>
                 </td>
             </tr>
             <tr>
                 <th>Content:</th>
                 <td>
-                    <textarea id="content" name="content" required>{{ prev.content }}</textarea>
+                    <textarea id="content" name="content" class="textarea textarea-bordered" required>{{ prev.content }}</textarea>
                 </td>
             </tr>
         </table>
@@ -24,9 +28,9 @@
         {% endif %}
         <input type="file" id="attachments" name="attachments" multiple>
         <div style="display: flex;">
-            <input class="btn btn-primary m-1" type="submit">
+            <input class="btn btn-primary m-1 ms-5 my-4" type="submit">
             {% if prev.annID %}
-            <a href="/announcement/delete/{{ prev.annID }}" id="delete" class="btn btn-error m-1">Delete</a>
+            <a href="/announcement/delete/{{ prev.annID }}" id="delete" class="btn btn-error m-1 my-4">Delete</a>
             {% endif %}
         </div>
     </form>
