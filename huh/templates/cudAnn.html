@@ -23,8 +23,11 @@
         <label for="attachments">Upload attachments:</label>
         {% endif %}
         <input type="file" id="attachments" name="attachments" multiple>
-        <div style="display: flex;"><input class="button" type="submit">
-        {% if prev.annID %}<a href="/announcement/delete/{{ prev.annID }}" id="delete">Delete</a>{% endif %}
+        <div style="display: flex;">
+            <input class="btn btn-primary m-1" type="submit">
+            {% if prev.annID %}
+            <a href="/announcement/delete/{{ prev.annID }}" id="delete" class="btn btn-error m-1">Delete</a>
+            {% endif %}
         </div>
     </form>
 {% endblock %}
