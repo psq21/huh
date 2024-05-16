@@ -1,7 +1,9 @@
 {% macro attachment(announcement_id, name) %}
     <button class="btn btn-wide btn-sm m-1">
         <a target="_blank"
-            href="/announcement/{{ announcement_id }}/attachment/{{ name }}"
-            style="min-width: 0; text-overflow: clip; overflow: hidden;">{{ name }}</a>
+           href="/announcement/{{ announcement_id }}/attachment/{{ name }}"
+           style="min-width: 0;
+                  text-overflow: clip;
+                  overflow: hidden">{{ name }}</a>
     </button>
 {% endmacro %}

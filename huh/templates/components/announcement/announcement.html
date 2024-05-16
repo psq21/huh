@@ -1,22 +1,26 @@
 {% from 'components/attachment/attachment.html' import attachment with context %}
 {% macro announcement(id, title, name, timestamp, attachments, content, allowed_edit) %}
-<div class="ann">
-    <div class="edit">
-        {% if allowed_edit %}
-        <a href="../edit/{{ id }}">
-            <button class="btn btn-circle btn-sm col-[3]">
-                <img src="{{ url_for('static', filename='pencil.svg') }}" class="h-4 w-4" alt="Edit" />
-            </button>
-        </a>
-        {% endif %}
+    <div class="card w-full bg-base-100 shadow-lg flex flex-col gap-2 p-6 align-center">
+        <div class="flex justify-between">
+            <div>
+                <p class="text-2xl font-semibold">{{ title }}</p>
+                <p class="text-sm text-slate-400">{{ name }} at {{ timestamp|format_timestamp }}</p>
+            </div>
+            <div class="edit">
+                {% if allowed_edit %}
+                    <a href="../edit/{{ id }}">
+                        <button class="btn btn-circle btn-sm col-[3]">
+                            <img src="{{ url_for('static', filename='pencil.svg') }}"
+                                 class="h-4 w-4"
+                                 alt="Edit" />
+                        </button>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; ">
+            {% for att in attachments %}{{ attachment(id, att.name) }}{% endfor %}
+        </div>
+        <p class="content" style="word-wrap: break-word;">{{ content }}</p>
     </div>
-    <p class="title">{{ title }}</p>
-    <p class="author">{{ name }} at {{ timestamp|format_timestamp }}</p>
-    <div style="display: flex; flex-wrap: wrap; ">
-        {% for att in attachments %}
-        {{ attachment(id, att.name) }}
-        {% endfor %}
-    </div>
-    <p class="content" style="word-wrap: break-word;">{{ content }}</p>
-</div>
 {% endmacro %}
