@@ -1,19 +1,19 @@
-{% macro comment(comment_id, author_name, content, timestamp, allowed_edit) %}
+{% macro comment(comm, comm_name) %}
     <div class="chat chat-start px-4 ml-2">
         <div class="chat-header">
-            {{ author_name }}
-            <time class="text-xs opacity-50">{{ timestamp|format_timestamp }}</time>
+            {{ comm_name }}
+            <time class="text-xs opacity-50">{{ comm.timestamp|format_timestamp }}</time>
         </div>
         <div class="chat-bubble shrink-0">
-            <p>{{- content -}}</p>
+            <p>{{- comm.content -}}</p>
         </div>
-        {% if allowed_edit %}
+        {% if current_user.id == comm.author_id %}
             <button class="btn btn-circle btn-sm col-[3] edit-btn">
                 <img src="{{ url_for('static', filename='pencil.svg') }}"
                      class="h-4 w-4"
                      alt="Edit" />
             </button>
         {% endif %}
-        <div class="collapse">{{ comment_id }}</div>
+        <var class="invisible comment_id">{{ comm.id }}</var>
     </div>
 {% endmacro %}

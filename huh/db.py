@@ -1,12 +1,12 @@
 from flask_login import UserMixin
 from datetime import datetime
-import sqlite3
-from typing import Any, Self
-from werkzeug.datastructures import ImmutableMultiDict, FileStorage
-from werkzeug.utils import secure_filename
+from typing import Any
 import os
+from pathlib import Path
+import sqlite3
 
-DB_PATH = "app.db"
+DB_PATH = Path(os.getenv("HUH_DB_PATH") or "app.db").absolute()
+DB_DEBUG = os.getenv("HUH_DB_DEBUG") or False
 
 conn = sqlite3.connect(DB_PATH)
 cur = conn.cursor()
@@ -48,7 +48,10 @@ conn.close()
 
 
 def connect():
-    return sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH)
+    if DB_DEBUG:
+        conn.set_trace_callback(print)
+    return conn
 
 
 class Entry:
@@ -57,23 +60,29 @@ class Entry:
     def __init__(self, id: int):
         self.id = id
 
-    def __eq__(self, other: Self):
+    def __eq__(self, other: Any):
         assert isinstance(other, self.__class__)
         return self.id == other.id
 
-    def __ne__(self, other: Self):
+    def __ne__(self, other: Any):
         assert isinstance(other, self.__class__)
         return self.id != other.id
 
     @classmethod
-    def by_column(cls, conn: sqlite3.Connection, column: str, value: Any):
+    def by_columns(
+        cls, conn: sqlite3.Connection, columns: tuple[str, ...], values: tuple
+    ):
         cur = conn.cursor()
+        cond = " AND ".join(f"{c} = ?" for c in columns)
         res = cur.execute(
-            f"SELECT rowid AS id, * FROM {cls.table_name} WHERE {column} = ?",
-            (value,),
+            f"SELECT rowid AS id, * FROM {cls.table_name} WHERE {cond}", values
         )
 
         return (cls(*row) for row in res)
+
+    @classmethod
+    def by_column(cls, conn: sqlite3.Connection, column: str, value: Any):
+        return cls.by_columns(conn, (column,), (value,))
 
     @classmethod
     def by_id(cls, conn: sqlite3.Connection, id: int):
@@ -101,7 +110,7 @@ class Entry:
 
     @classmethod
     def get_column_by_id(cls, conn: sqlite3.Connection, column: str, id: int):
-        return cls.get_columns_by_id(cls, conn, [column], id)
+        return cls.get_columns_by_id(conn, [column], id)[0]
 
     @classmethod
     def all(cls, conn: sqlite3.Connection):
@@ -109,6 +118,41 @@ class Entry:
         res = cur.execute(f"SELECT rowid AS id, * FROM {cls.table_name}", ())
 
         return (cls(*row) for row in res)
+
+    @classmethod
+    def delete_by_columns(
+        cls, conn: sqlite3.Connection, columns: tuple[str, ...], values: tuple
+    ):
+        cur = conn.cursor()
+        cond = " AND ".join(f"{c} = ?" for c in columns)
+        res = cur.execute(
+            f"DELETE FROM {cls.table_name} WHERE {cond} RETURNING rowid, *", values
+        )
+        ret = [cls(*row) for row in res]
+        conn.commit()
+
+        return ret
+
+    @classmethod
+    def delete_by_column(cls, conn: sqlite3.Connection, column: str, value: Any):
+        return cls.delete_by_columns(conn, (column,), (value,))
+
+    @classmethod
+    def delete_by_id(cls, conn: sqlite3.Connection, id: int):
+        ret = cls.delete_by_column(conn, "rowid", id)
+        return ret[0] if len(ret) else None
+
+    def delete(self, conn: sqlite3.Connection):
+        return type(self).delete_by_id(conn, self.id)
+
+    def update(self, conn: sqlite3.Connection, columns: tuple[str, ...], values: tuple):
+        cur = conn.cursor()
+        updates = ", ".join(f"{c} = ?" for c in columns)
+        cur.execute(
+            f"UPDATE {type(self).table_name} SET {updates} WHERE rowid = ?",
+            values + (self.id,),
+        )
+        conn.commit()
 
 
 class User(UserMixin, Entry):
@@ -138,14 +182,6 @@ class User(UserMixin, Entry):
         conn.commit()
 
         return User(id, email, name, hash, False)
-
-    @staticmethod
-    def by_email(conn: sqlite3.Connection, email: str):
-        cur = conn.cursor()
-        res = cur.execute("SELECT rowid AS id, * FROM user WHERE email = ?", (email,))
-        data = res.fetchone()
-
-        return User(*data) if data else None
 
     def get_id(self):
         return str(self.id)
@@ -178,99 +214,6 @@ class Announcement(Entry):
 
         return Announcement(id, author_id, title, timestamp, content)
 
-    @staticmethod
-    def delete_w_ann(conn: sqlite3.Connection, id: int):
-        cur = conn.cursor()
-        cur.execute("DELETE FROM Announcement WHERE rowid=?", (id))
-        conn.commit()
-
-    @staticmethod
-    def all_ann_w_name(conn: sqlite3.Connection):
-        cur = conn.cursor()
-        cur.row_factory = sqlite3.Row
-        res = cur.execute(
-            """
-            SELECT Announcement.rowid as annID,title,timestamp,content, User.rowid as userID, name
-            FROM Announcement JOIN User ON Announcement.author_id=User.rowid
-            """
-        )
-
-        return [dict(row) for row in res.fetchall()]
-
-    @staticmethod
-    def one_ann(conn: sqlite3.Connection, annID: int):
-        cur = conn.cursor()
-        cur.row_factory = sqlite3.Row
-        res = cur.execute(
-            """
-            SELECT Announcement.rowid AS annID,title,timestamp,content, User.name, User.rowid AS userID
-            FROM Announcement JOIN User ON Announcement.author_id=User.rowid
-            WHERE Announcement.rowid=?
-            """,
-            (annID,),
-        )
-        return dict(res.fetchone())
-
-    @staticmethod
-    def one_ann_comments(conn: sqlite3.Connection, annID: int):
-        cur = conn.cursor()
-        cur.row_factory = sqlite3.Row
-        res = cur.execute(
-            """
-            SELECT * FROM Comment LEFT OUTER JOIN User ON Comment.author_id=User.rowid
-            WHERE announcement_id=?
-            """,
-            (annID,),
-        )
-        return [dict(row) for row in res.fetchall()]
-
-    @staticmethod
-    def one_ann_attachments(conn: sqlite3.Connection, annID: int):
-        cur = conn.cursor()
-        cur.row_factory = sqlite3.Row
-        res = cur.execute("SELECT * FROM Attachment WHERE announcement_id=?", (annID,))
-        return [dict(row) for row in res.fetchall()]
-
-    @staticmethod
-    def update_announcement(
-        conn: sqlite3.Connection,
-        annID: int,
-        title: str,
-        content: str,
-        attachments: ImmutableMultiDict[str, FileStorage] | None,
-    ):
-        cur = conn.cursor()
-        cur.execute(
-            "UPDATE Announcement SET title=?, content=? WHERE rowid=?",
-            (title, content, annID),
-        )
-
-        # perform a diffing operation to determine which files to delete
-
-        existing = Attachment.by_column(conn, "announcement_id", annID)
-        existing_files = {att.name for att in existing}
-
-        new_files = set() if attachments==None else set([secure_filename(att.filename) for att in attachments.values()])
-
-        del_files = existing_files - new_files
-        add_files = new_files - existing_files
-
-        print(del_files, add_files)
-        for filename in del_files:
-            cur.execute(
-                "DELETE FROM Attachment WHERE announcement_id=? AND name=?",
-                (annID, filename),
-            )
-            os.remove(os.path.join(os.getcwd(), "attachments", str(annID), filename))
-
-        for filename in add_files:
-            att = attachments.get('attachments',filename)
-            att.save(os.path.join(os.getcwd(), "attachments", str(annID), filename))
-            Attachment.create(conn, annID, filename)
-
-        conn.commit()
-        return
-
 
 class Attachment(Entry):
     table_name = "attachment"
@@ -285,28 +228,13 @@ class Attachment(Entry):
     def create(conn: sqlite3.Connection, annID: int, name: str):
         cur = conn.cursor()
         res = cur.execute(
-            "INSERT INTO Attachment VALUES (?,?) RETURNING rowid", (annID, name)
+            "INSERT INTO attachment VALUES (?,?) RETURNING rowid", (annID, name)
         )
 
         id = res.fetchone()[0]
         conn.commit()
 
         return Attachment(id, annID, name)
-
-    @staticmethod
-    def get_file(annID: int, name: str):
-        return os.path.join(os.getcwd(), "attachments", str(annID), name)
-
-    @staticmethod
-    def delete_w_ann(conn: sqlite3.Connection, annID: int):
-        cur = conn.cursor()
-        res = cur.execute(
-            "DELETE FROM Attachment WHERE announcement_id=? RETURNING name", (annID,)
-        )
-        conn.commit()
-
-        delFiles = [row[0] for row in res.fetchall()]
-        return delFiles
 
 
 class Comment(Entry):
@@ -342,23 +270,3 @@ class Comment(Entry):
         conn.commit()
 
         return Comment(id, author_id, announcement_id, timestamp, content)
-
-    @staticmethod
-    def delete_w_ann(conn: sqlite3.Connection, annID: int):
-        cur = conn.cursor()
-        cur.execute("DELETE FROM Comment WHERE author_id=?", (annID,))
-        conn.commit()
-
-    def update(self, conn: sqlite3.Connection, content: str):
-        cur = conn.cursor()
-        cur.execute(
-            "UPDATE comment SET content = ? WHERE rowid = ?", (content, self.id)
-        )
-        conn.commit()
-
-        self.content = content
-
-    def delete(self, conn: sqlite3.Connection):
-        cur = conn.cursor()
-        cur.execute("DELETE FROM comment WHERE rowid = ?", (self.id,))
-        conn.commit()

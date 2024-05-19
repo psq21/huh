@@ -1,58 +1,57 @@
-from flask_login import login_required, current_user
-from flask import Blueprint, request, abort
-from huh.db import Comment, connect
+from flask_login import current_user, login_required
+from flask import Blueprint, abort, request
+
+from huh import db, util
+from huh.db import Comment
 
 bp = Blueprint("comment", __name__, url_prefix="/comment")
 
 
-@bp.route("/create", methods=["POST"])
+@bp.route("/create/", methods=["POST"])
 @login_required
 def create():
-    author_id = current_user.id
     try:
-        announcement_id, content = (
-            int(request.form["announcement_id"]),
+        ann_id, content = (
+            request.form["announcement_id"],
             request.form["content"],
         )
-    except (KeyError, ValueError):
+    except KeyError:
         abort(400)
-    with connect() as conn:
-        Comment.create(conn, author_id, announcement_id, content)
+
+    ann_id = util.check_id(ann_id)
+
+    with db.connect() as conn:
+        Comment.create(conn, current_user.id, ann_id, content)
 
     return "", 201
 
 
-@bp.route("/delete/<comment_id>", methods=["DELETE"])
+@bp.route("/delete/<id>/", methods=["DELETE"])
 @login_required
-def delete(comment_id: str):
-    if not comment_id.isdigit():
-        abort(400)
+def delete(id):
+    id = util.check_id(id)
 
-    with connect() as conn:
-        comment = Comment.by_id(conn, int(comment_id))
-        if comment is None:
-            abort(404)
-        comment.delete(conn)
+    with db.connect() as conn:
+        comm = util.check_exists(Comment.by_id(conn, id))
+        comm.delete(conn)
 
     return "", 204
 
 
-@bp.route("/update/<comment_id>", methods=["PUT"])
+@bp.route("/update/<id>/", methods=["PUT"])
 @login_required
-def update(comment_id: str):
-    if not comment_id.isdigit():
-        abort(400)
+def update(id):
+    id = util.check_id(id)
 
     try:
         content = request.form["content"]
     except KeyError:
         abort(400)
 
-    with connect() as conn:
+    with db.connect() as conn:
+        comm = util.check_exists(Comment.by_id(conn, id))
+        util.check_user(comm.author_id)
 
-        comment = Comment.by_id(conn, int(comment_id))
-        if comment is None:
-            abort(404)
-        comment.update(conn, content)
+        comm.update(conn, ("content",), (content,))
 
     return "", 204

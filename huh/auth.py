@@ -1,4 +1,4 @@
-from email_validator import validate_email, EmailNotValidError
+from email_validator import EmailNotValidError, validate_email
 from flask import Blueprint, abort, redirect, render_template, request, url_for
 from flask_login import current_user, login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -9,7 +9,7 @@ from huh.db import User
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
-@bp.route("/signup", methods=["GET", "POST"])
+@bp.route("/signup/", methods=["GET", "POST"])
 def signup():
     if not current_user.is_anonymous:
         return redirect(url_for("homepage"))
@@ -56,7 +56,7 @@ def signup():
     return redirect(url_for("homepage"))
 
 
-@bp.route("/login", methods=["GET", "POST"])
+@bp.route("/login/", methods=["GET", "POST"])
 def login():
     if not current_user.is_anonymous:
         return redirect(url_for("homepage"))
@@ -89,7 +89,7 @@ def login():
     return redirect(url_for("homepage"))
 
 
-@bp.route("logout")
+@bp.route("/logout/")
 def logout():
     logout_user()
     return redirect(url_for("homepage"))

@@ -1,14 +1,14 @@
 {% from 'components/attachment/attachment.html' import attachment with context %}
-{% macro announcement(id, title, name, timestamp, attachments, content, allowed_edit) %}
+{% macro announcement(ann, name, atts) %}
     <div class="card w-full bg-base-100 shadow-lg flex flex-col gap-2 p-6 align-center">
         <div class="flex justify-between">
             <div>
-                <p class="text-2xl font-semibold">{{ title }}</p>
-                <p class="text-sm text-slate-400">{{ name }} at {{ timestamp|format_timestamp }}</p>
+                <p class="text-2xl font-semibold">{{ ann.title }}</p>
+                <p class="text-sm text-slate-400">{{ name }} at {{ ann.timestamp|format_timestamp }}</p>
             </div>
             <div class="edit">
-                {% if allowed_edit %}
-                    <a href="../edit/{{ id }}">
+                {% if current_user.id == ann.author_id %}
+                    <a href="{{ url_for('announcement.edit', id=ann.id) }}">
                         <button class="btn btn-circle btn-sm col-[3]">
                             <img src="{{ url_for('static', filename='pencil.svg') }}"
                                  class="h-4 w-4"
@@ -19,8 +19,8 @@
             </div>
         </div>
         <div style="display: flex; flex-wrap: wrap; ">
-            {% for att in attachments %}{{ attachment(id, att.name) }}{% endfor %}
+            {% for att in atts %}{{ attachment(att) }}{% endfor %}
         </div>
-        <p class="content" style="word-wrap: break-word;">{{ content }}</p>
+        <p class="content" style="word-wrap: break-word;">{{ ann.content }}</p>
     </div>
 {% endmacro %}

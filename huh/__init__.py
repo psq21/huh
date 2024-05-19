@@ -8,14 +8,11 @@ from huh.db import User
 
 app = Flask(__name__)
 
-# app.secret_key = secrets.token_urlsafe(16)
-# revert this change later
-app.secret_key = "b"
+app.secret_key = secrets.token_urlsafe(16)
 
 app.register_blueprint(auth.bp)
-app.register_blueprint(comment.bp)
-
 app.register_blueprint(announcement.bp)
+app.register_blueprint(comment.bp)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -32,6 +29,9 @@ def homepage():
     return render_template("index.html")
 
 
-@app.template_filter('format_timestamp')
+@app.template_filter("format_timestamp")
 def format_timestamp(timestamp):
     return datetime.fromtimestamp(timestamp)
+
+
+app.jinja_env.globals.update(zip=zip)

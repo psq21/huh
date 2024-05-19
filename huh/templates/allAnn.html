@@ -6,10 +6,8 @@
 {% endblock %}
 {% block content %}
     <h1 id="annHeader">Announcements</h1>
-    {% for ann in anns %}
-        <div onClick="window.location.href='/announcement/{{ ann.annID }}'"
-             class="m-6 cursor-pointer">
-            {{ announcement(ann.annID, ann.title, ann.name, ann.timestamp, ann.attachments, ann.content, ann.allowed_edit) }}
-        </div>
+    {% for ann, name in zip(anns, names) %}
+        <div onClick="window.location.href='{{ url_for('announcement.one', id=ann.id) }}'"
+             class="m-6 cursor-pointer">{{ announcement(ann, name, []) }}</div>
     {% endfor %}
 {% endblock %}

@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", (event) => {
   const chats = document.querySelectorAll(".chat");
-  const ids = Array.from(document.querySelectorAll(".chat > .collapse")).map((el) => el.textContent.trim());
+  const ids = Array.from(document.querySelectorAll(".chat > .comment_id")).map((el) => el.textContent.trim());
   const editBtns = document.querySelectorAll(".edit-btn");
   const chatBubbles = document.querySelectorAll(".chat-bubble");
 

@@ -4,7 +4,7 @@
           href="{{ url_for('static',filename='crudAnn.css') }}">
 {% endblock %}
 {% block content %}
-    {% if prev.annID %}
+    {% if prev %}
         <h1 class="crudHeader">Edit or Delete Announcement</h1>
     {% else %}
         <h1 class="crudHeader">Create Announcement</h1>
@@ -27,7 +27,7 @@
                 </td>
             </tr>
         </table>
-        {% if prev.annID %}
+        {% if prev %}
             <label for="attachments">Reupload attachments:</label>
         {% else %}
             <label for="attachments">Upload attachments:</label>
@@ -35,8 +35,8 @@
         <input type="file" id="attachments" name="attachments" multiple>
         <div style="display: flex;">
             <input class="btn btn-primary m-1 ms-5 my-4" type="submit">
-            {% if prev.annID %}
-                <a href="/announcement/delete/{{ prev.annID }}"
+            {% if prev %}
+                <a href="{{ url_for('announcement.delete', id=prev.id) }}"
                    id="delete"
                    class="btn btn-error m-1 my-4">Delete</a>
             {% endif %}

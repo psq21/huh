@@ -1,163 +1,155 @@
 from flask import (
     Blueprint,
-    render_template,
-    redirect,
-    url_for,
-    request,
     abort,
+    redirect,
+    render_template,
+    request,
     send_file,
+    url_for,
 )
-from flask_login import login_required, current_user
-from werkzeug.utils import secure_filename
+from flask_login import current_user, login_required
+from pathlib import Path
 import os
 
-from huh.db import connect, Announcement, Attachment, Comment
+from huh import db, util
+from huh.db import Announcement, Attachment, Comment, User
 
 bp = Blueprint("announcement", __name__, url_prefix="/announcement")
 
-
-def opener(path, flags):
-    return os.open(path, flags, 0o777)
-
-
-os.umask(
-    0
-)  # Without this, the created file will have 0o777 - 0o022 (default umask) = 0o755 permissions
+ATTACHMENT_DIR = Path(os.getenv("HUH_ATTACHMENT_DIR") or "./attachments").absolute()
+os.makedirs(ATTACHMENT_DIR, exist_ok=True)
 
 
-@bp.route("/all/", methods=["GET", "POST"])
-def allAnn():
-    if request.method == "GET":  # return page of all announcements
-        conn = connect()
-        data = Announcement.all_ann_w_name(conn)
-        for ann in data:
-            if not current_user.is_authenticated:
-                ann["allowed_edit"] = False
+@bp.route("/all/")
+def all():
+    with db.connect() as conn:
+        anns = list(Announcement.all(conn))
+        names = (
+            User.get_column_by_id(conn, "name", ann.author_id) for ann in reversed(anns)
+        )
 
-            elif ann["userID"] == current_user.id:
-                ann["allowed_edit"] = True
-            else:
-                ann["allowed_edit"] = False
-        conn.close()
-        return render_template("allAnn.html", anns=data)
+        return render_template("allAnn.html", anns=reversed(anns), names=names)
 
 
+@bp.route("/<id>/")
 @login_required
-@bp.route("/<annID>/", methods=["GET", "POST"])
-def oneAnn(annID):
-    if request.method == "GET":  # return page of one announcement
-        conn = connect()
+def one(id):
+    id = util.check_id(id)
 
-        ann = Announcement.one_ann(conn, annID)
-        if not current_user.is_authenticated:
-            ann['allowed_edit'] = False
-        elif ann['userID'] == current_user.id:
-            ann["allowed_edit"] = True
-        else:
-            ann['allowed_edit'] = False
+    with db.connect() as conn:
+        ann = util.check_exists(Announcement.by_id(conn, id))
 
-        attachments = Announcement.one_ann_attachments(conn, annID)
+        name = User.get_column_by_id(conn, "name", ann.author_id)
+        atts = Attachment.by_column(conn, "announcement_id", id)
+        comms = list(Comment.by_column(conn, "announcement_id", id))
+        comm_names = (
+            User.get_column_by_id(conn, "name", comm.author_id) for comm in comms
+        )
 
-        comments = Announcement.one_ann_comments(conn, annID)
-        for comm in comments:
-            if not current_user.is_authenticated:
-                comm["allowed_edit"] = False
-            elif comm["author_id"] == current_user.id:
-                comm["allowed_edit"] = True
-            else:
-                comm["allowed_edit"] = False
-
-        conn.close()
         return render_template(
-            "oneAnn.html", ann=ann, comments=comments, attachments=attachments, 
+            "oneAnn.html",
+            ann=ann,
+            name=name,
+            comms=comms,
+            comm_names=comm_names,
+            atts=atts,
         )
 
 
-@login_required
 @bp.route("/create/", methods=["GET", "POST"])
-def createAnn():
-    if request.method == "GET":
-        prev = {"title": "", "content": ""}
-        return render_template("crudAnn.html", prev=prev)
-
-    elif request.method == "POST":
-
-        userID = current_user.id
-        conn = connect()
-        formData = request.form
-        fileData = request.files
-
-        ann = Announcement.create(conn, userID, formData["title"], formData["content"])
-        upload_dir = os.path.join(os.getcwd(), "attachments", str(ann.id))
-
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-        # check if there are attachments\
-        # [<FileStorage: '' ('application/octet-stream')>] if no attachments
-        if fileData.getlist("attachments")[0].stream.read() == b"":
-            conn.close()
-            return redirect(url_for("announcement.allAnn"))
-        for att in fileData.getlist("attachments"):
-            attName = secure_filename(att.filename)
-            fp = os.path.join(upload_dir, attName)
-
-            att.save(fp)
-            Attachment.create(conn, ann.id, attName)
-        conn.close()
-
-        return redirect(url_for("announcement.allAnn"))
-
-
 @login_required
-@bp.route("/edit/<annID>/", methods=["GET", "POST"])
-def editAnn(annID):
+def create():
     if request.method == "GET":
-        conn = connect()
-        data = Announcement.one_ann(conn, annID)
-        conn.close()
+        return render_template("crudAnn.html", prev=None)
 
-        return render_template("crudAnn.html", prev=data)
-
-    elif request.method == "POST":
-        formData = request.form
-        fileData = request.files
+    with db.connect() as conn:
         try:
-            title, content = formData["title"], formData["content"]
+            title, content = request.form["title"], request.form["content"]
         except KeyError:
             abort(400)
-        conn = connect()
 
-        if fileData.getlist("attachments")[0].stream.read() == b"":
-            fileData = None
+        ann = Announcement.create(conn, current_user.id, title, content)
 
-        Announcement.update_announcement(conn, annID, title, content, fileData)
+        for upload in request.files.getlist("attachments"):
+            if not upload.filename:
+                continue
 
-        return redirect("/announcement/all")
+            upload_name = util.secure_filename(upload.filename)
+            att = Attachment.create(conn, ann.id, upload_name)
+            upload.save(ATTACHMENT_DIR / str(att.id))
+
+    return redirect(url_for("announcement.one", id=ann.id))
 
 
+@bp.route("/edit/<id>/", methods=["GET", "POST"])
 @login_required
-@bp.route("/delete/<annID>/", methods=["GET", "POST"])
-def delAnn(annID: str):
-    if not annID.isdigit():
-        abort(400)
+def edit(id):
+    id = util.check_id(id)
 
-    if request.method == "GET":
+    with db.connect() as conn:
+        ann = util.check_exists(Announcement.by_id(conn, id))
+        util.check_user(ann.author_id)
 
-        with connect() as conn:
-            Announcement.delete_w_ann(conn, annID)
-            Comment.delete_w_ann(conn, annID)
-            delFiles = Attachment.delete_w_ann(conn, annID)
-        for filename in delFiles:
-            os.remove(url_for("attachments", filename=filename))
+        if request.method == "GET":
+            return render_template("crudAnn.html", prev=ann)
 
-        return redirect("/announcement/all/")
+        try:
+            title, content = request.form["title"], request.form["content"]
+        except KeyError:
+            abort(400)
+
+        ann.update(conn, ("title", "content"), (title, content))
+
+        att_map = None
+        for upload in request.files.getlist("attachments"):
+            if not upload.filename:
+                continue
+
+            if not att_map:
+                att_map = dict(
+                    (att.name, att)
+                    for att in Attachment.by_column(conn, "announcement_id", ann.id)
+                )
+
+            upload_name = util.secure_filename(upload.filename)
+
+            try:
+                att = att_map[upload_name]
+            except KeyError:
+                att = Attachment.create(conn, ann.id, upload_name)
+
+            upload.save(ATTACHMENT_DIR / str(att.id))
+
+    return redirect(url_for("announcement.one", id=ann.id))
 
 
+@bp.route("/delete/<id>/", methods=["GET"])
 @login_required
-@bp.route("/<annID>/attachment/<name>", methods=["GET"])
-def get_attachment(annID: str, name: str):
-    if not annID.isdigit():
-        abort(400)
+def delete(id):
+    id = util.check_id(id)
 
-    file = Attachment.get_file(annID, name)
-    return send_file(file)
+    with db.connect() as conn:
+        ann = util.check_exists(Announcement.by_id(conn, id))
+        util.check_user(ann.author_id)
+
+        Comment.delete_by_column(conn, "announcement_id", ann.id)
+
+        for att in Attachment.delete_by_column(conn, "announcement_id", ann.id):
+            os.remove(ATTACHMENT_DIR / str(att.id))
+
+        ann.delete(conn)
+
+    return redirect("/announcement/all/")
+
+
+@bp.route("/attachment/<id>/", methods=["GET"])
+@login_required
+def attachment(id):
+    id = util.check_id(id)
+
+    with db.connect() as conn:
+        att = util.check_exists(Attachment.by_id(conn, id))
+
+        return send_file(
+            ATTACHMENT_DIR / str(id), as_attachment=True, download_name=att.name
+        )

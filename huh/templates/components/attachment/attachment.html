@@ -1,9 +1,8 @@
-{% macro attachment(announcement_id, name) %}
-    <button class="btn btn-wide btn-sm m-1">
-        <a target="_blank"
-           href="/announcement/{{ announcement_id }}/attachment/{{ name }}"
-           style="min-width: 0;
-                  text-overflow: clip;
-                  overflow: hidden">{{ name }}</a>
-    </button>
+{% macro attachment(att) %}
+    <a class="btn btn-wide btn-sm m-1 "
+       target="_blank"
+       href="{{ url_for('announcement.attachment', id=att.id) }}"
+       style="min-width: 0;
+              text-overflow: clip;
+              overflow: hidden">{{ att.name }}</a>
 {% endmacro %}

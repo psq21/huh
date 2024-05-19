@@ -13,23 +13,23 @@
                 <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-60">
                     {% if current_user.is_anonymous %}
                         <li>
-                            <a href="/auth/login">🚪Login</a>
+                            <a href="{{ url_for("auth.login") }}">🚪Login</a>
                         </li>
                         <li>
-                            <a href="/auth/signup">🚪Signup</a>
+                            <a href="{{ url_for("auth.signup") }}">🚪Signup</a>
                         </li>
                     {% else %}
                         <li>
-                            <a href="/">🏠 Home</a>
+                            <a href="{{ url_for("homepage") }}">🏠 Home</a>
                         </li>
                         <li>
-                            <a href="/announcement/all">👤 Profile</a>
+                            <a href="{{ url_for("announcement.all") }}">📣 Announcements</a>
                         </li>
                         <li>
-                            <a href="/announcement/create">✏️ Create Announcement</a>
+                            <a href="{{ url_for("announcement.create") }}">✏️ Create Announcement</a>
                         </li>
                         <li>
-                            <a href="/auth/logout">🚪 Logout</a>
+                            <a href="{{ url_for("auth.logout") }}">🚪 Logout</a>
                         </li>
                     {% endif %}
                 </ul>

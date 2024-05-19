@@ -6,7 +6,7 @@
           href="{{ url_for('static', filename='oneAnn.css') }}">
 {% endblock %}
 {% block content %}
-    {{ announcement(ann.annID, ann.title, ann.name, ann.timestamp, attachments, ann.content, ann.allowed_edit) }}
+    {{ announcement(ann, name, atts) }}
     <div class="flex flex-col p-10">
         <h1 id="commHeader">Comments</h1>
         <textarea id="comment"
@@ -17,23 +17,18 @@
             <button class="btn btn-sm btn-error cancel-button">Cancel</button>
         </div>
     </div>
-    {% for comm in comments %}
-        {{ comment(comm.rowid, comm.name, comm.content, comm.timestamp, comm.allowed_edit) }}
-    {% endfor %}
-    <div class="collapse annid">{{ ann.annID }}</div>
+    {% for comm, comm_name in zip(comms, comm_names) %}{{ comment(comm, comm_name) }}{% endfor %}
     <script>
+      const id = {{ ann.id }}
+
       document.querySelector('.create-button').addEventListener('click', () => {
         const comment = document.querySelector('#comment').value
-        const id = document.querySelector('.annid').innerText
-        console.log(id, document.querySelector('.annid').innerHTML, comment)
         createComment(id, comment)
-        
       })
 
       document.querySelector('.cancel-button').addEventListener('click', () => {
         document.querySelector('#comment').value = ''
       })
-
 
       function createComment(id, content) {
         const fd = new FormData()
@@ -41,7 +36,7 @@
         fd.append('announcement_id', id)
 
         // returns 204
-        fetch('/comment/create', {
+        fetch('{{ url_for("comment.create") }}', {
           method: 'POST',
           body: fd
         }).then(() => {
@@ -49,5 +44,5 @@
         })
       }
     </script>
-    <script src="{{ url_for('static', filename='comment.js' )}}" type="module"></script>
+    <script src="{{ url_for('static', filename='comment.js' ) }}" type="module"></script>
 {% endblock %}
