@@ -1,14 +1,15 @@
 {% macro comment(comm, comm_name) %}
-    <div class="chat chat-start px-4 ml-2">
+    <div class="chat chat-start px-4 ml-2" data-id="{{comm.id}}">
         <div class="chat-header">
             {{ comm_name }}
             <time class="text-xs opacity-50">{{ comm.timestamp|format_timestamp }}</time>
         </div>
-        <div class="chat-bubble shrink-0">
+        <div class="chat-bubble shrink-0" >
             <p>{{- comm.content -}}</p>
         </div>
         {% if current_user.id == comm.author_id %}
-            <button class="btn btn-circle btn-sm col-[3] edit-btn">
+            <button class="btn btn-circle btn-sm col-[3] edit-btn"
+                    data-id="{{ comm.id }}">
                 <img src="{{ url_for('static', filename='pencil.svg') }}"
                      class="h-4 w-4"
                      alt="Edit" />

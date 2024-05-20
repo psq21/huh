@@ -19,7 +19,7 @@
     </div>
     {% for comm, comm_name in zip(comms, comm_names) %}{{ comment(comm, comm_name) }}{% endfor %}
     <script>
-      const id = {{ ann.id }}
+      const id = "{{ ann.id }}"
 
       document.querySelector('.create-button').addEventListener('click', () => {
         const comment = document.querySelector('#comment').value
@@ -44,5 +44,93 @@
         })
       }
     </script>
-    <script src="{{ url_for('static', filename='comment.js' ) }}" type="module"></script>
+    <script>document.addEventListener("DOMContentLoaded", (event) => {
+      const chats = document.querySelectorAll(".chat");
+      const ids = Array.from(document.querySelectorAll(".chat > .comment_id")).map((el) => el.textContent.trim());
+      const editBtns = document.querySelectorAll(".edit-btn");
+      const chatBubbles = document.querySelectorAll(".chat-bubble");
+
+    
+      editBtns.forEach((editBtn, index) => {
+        const id = editBtn.dataset.id;
+        const chat = document.querySelector(`.chat[data-id="${id}"]`);
+        const chatBubble = chat.querySelector(".chat-bubble");
+        let originalContent = chatBubble.textContent;
+    
+        const editEvent = () => {
+          originalContent = chatBubble.textContent;
+          chatBubble.innerHTML = `
+              <div class="flex flex-col gap-2 items-center">
+                  <textarea class="textarea textarea-bordered text-black" placeholder="Comment something...">${originalContent.trim()}</textarea>
+                  <div class="flex gap-2">
+                      <button class="btn btn-info save-btn h-2">Save</button>
+                      <button class="btn btn-error delete-btn h-2">Delete</button>
+                  </div>
+              </div>
+              `;
+    
+          // handle on save
+          const saveBtn = chatBubble.querySelector(".save-btn");
+          saveBtn.addEventListener("click", () => {
+            const newContent = chatBubble.querySelector("textarea").value;
+            chatBubble.textContent = newContent;
+            originalContent = newContent;
+            editBtn.innerHTML = `
+                  <img src="../../static/pencil.svg" class="h-4 w-4" alt="Edit">
+                  `;
+            editBtn.addEventListener("click", editEvent);
+            const fd = new FormData();
+            fd.append("content", newContent);
+            let baseUrl = "{{ url_for('comment.update', id='_id_') }}"; 
+            let url = baseUrl.replace('_id_', id);
+    
+            fetch(url, {
+              method: "PUT",
+              body: fd,
+            }).then((res) => {
+              if (res.ok) {
+                console.log("Comment updated successfully");
+              } else {
+                console.error("Failed to update comment");
+              }
+            });
+          });
+    
+          // handle on delete
+          const deleteBtn = chatBubble.querySelector(".delete-btn");
+          deleteBtn.addEventListener("click", () => {
+            chat.remove();
+            let baseUrl = "{{ url_for('comment.delete', id='_id_') }}"; 
+            let url = baseUrl.replace('_id_', id);
+            fetch(url, {
+              method: "DELETE",
+            }).then((res) => {
+              if (res.ok) {
+                console.log("Comment deleted successfully");
+              } else {
+                console.error("Failed to delete comment");
+              }
+            });
+          });
+    
+          // handle cancel -- revert to original content
+          // the original edit button will change to a cancel button
+          editBtn.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              `;
+          editBtn.removeEventListener("click", editEvent);
+          editBtn.addEventListener("click", () => {
+            chatBubble.textContent = originalContent;
+            editBtn.innerHTML = `
+                  <img src="../../static/pencil.svg" class="h-4 w-4" alt="Edit">
+                  `;
+            editBtn.addEventListener("click", editEvent);
+            
+          });
+        };
+    
+        editBtn.addEventListener("click", editEvent);
+      });
+    });
+    </script>
 {% endblock %}
